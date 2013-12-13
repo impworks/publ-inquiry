@@ -1,19 +1,19 @@
-var LoginCtrl = function($scope, $http, endpoints) {
+var LoginCtrl = function($scope, $http, $location, globals, endpoints) {
+
+    if(globals.token) {
+        $location.path('/main');
+        return;
+    }
 
     $scope.login = 'tester@test.com';
     $scope.pass = '';
     $scope.hasError = false;
     $scope.working = false;
 
-    // checks if the user is logged in
-    $scope.showLogin = function() {
-        return !$scope.token || $scope.hasError;
-    };
-
     // checks if the form has been filled in
     $scope.canLogIn = function() {
         return !!$scope.login && !!$scope.pass && !$scope.working;
-    }
+    };
 
     // closes error message
     $scope.closeError = function() {
@@ -41,15 +41,44 @@ var LoginCtrl = function($scope, $http, endpoints) {
             .success(function(data, status) {
                 $scope.working = false;
                 $scope.hasError = !data.d.Success;
-                if(data.d.Success)
-                    $scope.token = data.d.Token;
+                if(data.d.Success) {
+                    globals.token = data.d.Token;
+                    $location.path('/main');
+                }
             });
     };
 };
 
-angular.module('inquiry', [])
+var MainCtrl = function ($scope, $http, $location, globals) {
+
+    // check auth
+    if(!globals.token) {
+        $location.path('/');
+        return;
+    }
+};
+
+angular.module('inquiry', [ 'ngRoute' ])
     .value('endpoints', {
         publ: 'http://publ.com/Services/Admin.asmx',
         sso : 'https://logon.flippingbook.com/SSOThinClient.asmx'
     })
-    .controller('LoginCtrl', [ '$scope', '$http', 'endpoints', LoginCtrl ]);
+    .value('globals', {
+        token : ''
+    })
+    .config(function($routeProvider) {
+        $routeProvider
+            .when('/', {
+                controller: 'LoginCtrl',
+                templateUrl: 'login.html'
+            })
+            .when('/main', {
+                controller: 'MainCtrl',
+                templateUrl: 'main.html'
+            })
+            .otherwise({
+                redirectTo: '/'
+            });
+    })
+    .controller('LoginCtrl', LoginCtrl)
+    .controller('MainCtrl', MainCtrl);
