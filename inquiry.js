@@ -17,29 +17,26 @@ var LoginCtrl = function($scope, $http, $location, globals, endpoints) {
         return;
     }
 
-    $scope.login = 'tester@test.com';
+    $scope.login = globals.login || 'tester@test.com';
     $scope.pass = '';
     $scope.hasError = false;
     $scope.working = false;
 
-    // checks if the form has been filled in
     $scope.canLogin = function() {
         return !!$scope.login && !!$scope.pass && !$scope.working;
     };
 
-    // closes error message
     $scope.closeError = function() {
         $scope.hasError = false;
     };
 
-    // gets the caption for login button
     $scope.loginCaption = function() {
         return $scope.working ? 'Working...' : 'Log in';
     };
 
-    // attempts login
     $scope.doLogin = function() {
         $scope.working = true;
+        globals.login = $scope.login;
         var request = {
             authenticationData: {
                 PlainTextPassword: $scope.pass,
@@ -49,6 +46,7 @@ var LoginCtrl = function($scope, $http, $location, globals, endpoints) {
                 Email: $scope.login
             }
         };
+
         $http.post(endpoints.sso + '/CombinedAuthenticate', request)
             .success(function(data, status) {
                 $scope.working = false;
@@ -56,6 +54,8 @@ var LoginCtrl = function($scope, $http, $location, globals, endpoints) {
                 if(data.d.Success) {
                     globals.token = data.d.Token;
                     $location.path('/main');
+                } else {
+                    $scope.pass = '';
                 }
             });
     };
@@ -71,12 +71,18 @@ var MainCtrl = function ($scope, $http, $location, globals) {
 };
 
 angular.module('inquiry', [ 'ngRoute' ])
-    .value('endpoints', {
+    .constant('endpoints', {
         publ: 'http://publ.com/Services/Admin.asmx',
         sso : 'https://logon.flippingbook.com/SSOThinClient.asmx'
     })
-    .value('globals', {
-        token : ''
+    .factory('globals', function() {
+        var ls = window['localStorage'];
+        return {
+            get token() { return ls.token && JSON.parse(ls.token); },
+            set token(t) { ls.token = JSON.stringify(t); },
+            get login() { return ls.login && JSON.parse(ls.login); },
+            set login(t) { ls.login = JSON.stringify(t); }
+        };
     })
     .config(function($routeProvider) {
         $routeProvider
