@@ -1,20 +1,48 @@
 <!DOCTYPE html>
-<html ng-app>
+<html ng-app="inquiry">
 <head>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.min.js"></script>
-    <script scr="inquiry.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.js"></script>
+    <script src="inquiry.js"></script>
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-theme.min.css">
     <title>Publ.com Inquiry</title>
 </head>
-<body ng-model="MainCtrl">
-    <div ng-show="showLogin">
-
-    </div>
-    <div ng-hide="showLogin">
-
+<body>
+    <div ng-controller="LoginCtrl" style="margin-top: 64px">
+        <div class="col-sm-4 col-sm-offset-4" ng-show="showLogin()">
+            <form class="form form-horizontal">
+                <div class="panel panel-default" role="form" ng-submit="doLogin()">
+                    <div class="panel-heading">
+                        <strong>Log in to Publ.com Inquiry</strong>
+                    </div>
+                    <div class="panel-body">
+                        <div class="alert alert-danger" ng-show="hasError">
+                            <button type="button" class="close" aria-hidden="true" ng-click="closeError()">&times;</button>
+                            <strong>Oops!</strong> Looks like your password is incorrect.
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-3" for="login">Login</label>
+                            <div class="col-sm-9">
+                                <input type="text" id="login" class="form-control" ng-model="login" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-3" for="pass">Password</label>
+                            <div class="col-sm-9">
+                                <input type="password" id="pass" class="form-control" ng-model="pass" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-3 col-sm-10">
+                                <input type="button" value="{{loginCaption()}}" class="btn btn-primary" ng-disabled="!canLogIn()" ng-click="doLogin()" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </body>
 </html>
