@@ -11,6 +11,20 @@
     <title>Publ.com Inquiry</title>
 </head>
 <body>
-    <div ng-view></div>
+    <header ng-controller="GlobalCtrl">
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#/">Publ.com Inquiry</a>
+                </div>
+                <ul class="nav navbar-nav navbar-right">
+                    <li ng-show="isLoggedIn()">
+                        <a href="#/" ng-click="logout()">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <div ng-view style="padding-top: 50px"></div>
 </body>
 </html>

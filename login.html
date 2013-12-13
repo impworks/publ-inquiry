@@ -1,34 +1,32 @@
-<div style="margin-top: 64px">
-    <div class="col-sm-4 col-sm-offset-4">
-        <form class="form form-horizontal">
-            <div class="panel panel-default" role="form" ng-submit="doLogin()">
-                <div class="panel-heading">
-                    <strong>Log in to Publ.com Inquiry</strong>
+<div class="col-sm-4 col-sm-offset-4" style="margin-top: 64px">
+    <form class="form form-horizontal">
+        <div class="panel panel-default" role="form" ng-submit="doLogin()">
+            <div class="panel-heading">
+                <strong>Log in to Publ.com Inquiry</strong>
+            </div>
+            <div class="panel-body">
+                <div class="alert alert-danger" ng-show="hasError">
+                    <button type="button" class="close" aria-hidden="true" ng-click="closeError()">&times;</button>
+                    <strong>Oops!</strong> Looks like your password is incorrect.
                 </div>
-                <div class="panel-body">
-                    <div class="alert alert-danger" ng-show="hasError">
-                        <button type="button" class="close" aria-hidden="true" ng-click="closeError()">&times;</button>
-                        <strong>Oops!</strong> Looks like your password is incorrect.
+                <div class="form-group">
+                    <label class="control-label col-sm-3" for="login">Login</label>
+                    <div class="col-sm-9">
+                        <input type="text" id="login" class="form-control" ng-model="login" />
                     </div>
-                    <div class="form-group">
-                        <label class="control-label col-sm-3" for="login">Login</label>
-                        <div class="col-sm-9">
-                            <input type="text" id="login" class="form-control" ng-model="login" />
-                        </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-3" for="pass">Password</label>
+                    <div class="col-sm-9">
+                        <input type="password" id="pass" class="form-control" ng-model="pass" />
                     </div>
-                    <div class="form-group">
-                        <label class="control-label col-sm-3" for="pass">Password</label>
-                        <div class="col-sm-9">
-                            <input type="password" id="pass" class="form-control" ng-model="pass" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-offset-3 col-sm-10">
-                            <input type="button" value="{{loginCaption()}}" class="btn btn-primary" ng-disabled="!canLogIn()" ng-click="doLogin()" />
-                        </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-3 col-sm-10">
+                        <input type="button" value="{{loginCaption()}}" class="btn btn-primary" ng-disabled="!canLogin()" ng-click="doLogin()" />
                     </div>
                 </div>
             </div>
-        </form>
-    </div>
+        </div>
+    </form>
 </div>

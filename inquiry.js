@@ -1,3 +1,15 @@
+var GlobalCtrl = function($scope, $location, globals) {
+
+    $scope.isLoggedIn = function () {
+        return !!globals.token;
+    };
+
+    $scope.logout = function() {
+        globals.token = false;
+        $location.path('/');
+    };
+};
+
 var LoginCtrl = function($scope, $http, $location, globals, endpoints) {
 
     if(globals.token) {
@@ -11,7 +23,7 @@ var LoginCtrl = function($scope, $http, $location, globals, endpoints) {
     $scope.working = false;
 
     // checks if the form has been filled in
-    $scope.canLogIn = function() {
+    $scope.canLogin = function() {
         return !!$scope.login && !!$scope.pass && !$scope.working;
     };
 
@@ -80,5 +92,6 @@ angular.module('inquiry', [ 'ngRoute' ])
                 redirectTo: '/'
             });
     })
+    .controller('GlobalCtrl', GlobalCtrl)
     .controller('LoginCtrl', LoginCtrl)
     .controller('MainCtrl', MainCtrl);
