@@ -20,6 +20,12 @@
     margin-top: 64px;
 }
 
+#sidebar
+{
+    margin-top: 20px;
+    width: 200px;
+}
+
 .inner-link
 {
     cursor: pointer;
@@ -27,7 +33,7 @@
 
 .container
 {
-    width: 800px;
+    width: 900px;
 }
 
 .inline

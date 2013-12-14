@@ -70,34 +70,23 @@ var MainCtrl = function ($scope, $http, $location, globals, model, tools) {
     }
 
     var resetList = function() {
-        $scope.aggregations = [];
+        // reset conditions when they are
     };
 
     resetList();
 
     $scope.inquiryType = model.inquiryTypes[0];
     $scope.inquiryTypes = model.inquiryTypes;
+    var groupFields = model.groupFields;
 
-    $scope.getAggFields = function() {
-        return tools.Except(
-            model.aggFields[$scope.inquiryType.type],
-            function (v) { return tools.Contains($scope.aggregations, function(x) { return x.type == v.type; } ); }
-        );
+    $scope.getGroupFields = function() {
+        return groupFields[$scope.inquiryType.type];
     };
 
     $scope.setInquiryType = function(v) {
         $scope.inquiryType = v;
-        $scope.aggFields = model.aggFields[v.type];
+        $scope.groupFields = model.groupFields[v.type];
         resetList();
-    };
-
-    $scope.addAggregation = function(v) {
-        $scope.aggregations.push(v);
-    };
-
-    $scope.removeAggregation = function(v) {
-        var id = tools.FirstId($scope.aggregations, function(x) { return x.type == v.type; })
-        $scope.aggregations.splice(id, 1);
     };
 };
 
@@ -122,7 +111,7 @@ angular.module('inquiry', [ 'ngRoute' ])
             { type: 'series', name: 'collections' }
         ];
 
-        var aggFields = {
+        var groupFields = {
             books: [
                 { type: 'accesstype', name: 'Access type' },
                 { type: 'state', name: 'State' },
@@ -157,7 +146,7 @@ angular.module('inquiry', [ 'ngRoute' ])
 
         return {
             inquiryTypes: inquiryTypes,
-            aggFields: aggFields,
+            groupFields: groupFields,
             getPhrase: getPhrase
         };
     })
@@ -182,8 +171,16 @@ angular.module('inquiry', [ 'ngRoute' ])
             return find(arr, cnd).index;
         };
 
+        this.Select = function(arr, map) {
+            var result = [];
+            if(arr && arr.length)
+                for(var i = 0; i < arr.length; i++)
+                    result.push(map(arr[i]));
+            return result;
+        };
+
         this.Contains = function(arr, cnd) {
-            return find(arr, cnd).index != undefined;
+            return typeof find(arr, cnd).index !== 'undefined';
         };
 
         this.Except = function(arr, cnd) {
