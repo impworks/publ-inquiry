@@ -1,1 +1,49 @@
-<div>Test!</div>
+<div style="padding-top:64px">
+    <h2>
+        <a href="" ng-click="find()" class="btn btn-default pull-right">Show me!</a>
+        How many
+        <div class="dropdown inline">
+            <a data-toggle="dropdown" href="" class="dropdown-toggle inner-link">{{inquiryType.name}}</a>
+            <ul class="dropdown-menu" role="menu">
+                <li ng-repeat="inq in inquiryTypes">
+                    <a href="" ng-click="setInquiryType(inq)">{{inq.name}}</a>
+                </li>
+            </ul>
+        </div>
+        are there on Publ.com?
+    </h2>
+    <div ng-show="aggregations.length > 0">
+        <h3>
+            Aggregate by:
+            <h4 class="inline">
+                <ul class="list-inline inline">
+                    <li ng-repeat="curr in aggregations">
+                        <div class="label label-default">
+                            {{curr.name}}
+                            <button class="close-inline" ng-click="removeAggregation(curr)">&times;</button>
+                        </div>
+                    </li>
+                </ul>
+            </h4>
+        </h3>
+    </div>
+    <h3>
+        <div class="inline">
+            <a href="" ng-click="addCondition()" class="inner-link">Where...</a>
+        </div>
+        &nbsp;&nbsp;&nbsp;
+        <div class="dropdown inline" ng-show="getAggFields().length">
+            <a data-toggle="dropdown" href="" class="dropdown-toggle inner-link">Aggregate by...</a>
+            <ul class="dropdown-menu" role="menu">
+                <li ng-repeat="agg in getAggFields()">
+                    <a href="" ng-click="addAggregation(agg)">{{agg.name}}</a>
+                </li>
+            </ul>
+        </div>
+    </h3>
+    <div id="result">
+        <div class="well">
+            It is not yet known.
+        </div>
+    </div>
+</div>

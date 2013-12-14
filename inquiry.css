@@ -1,0 +1,58 @@
+#logo
+{
+    position: relative;
+    top: 4px;
+}
+
+#content-pane
+{
+    position: absolute;
+    top: 51px;
+}
+
+#login-panel
+{
+    margin-top: 64px;
+}
+
+#result
+{
+    margin-top: 64px;
+}
+
+.inner-link
+{
+    cursor: pointer;
+}
+
+.container
+{
+    width: 800px;
+}
+
+.inline
+{
+    display: inline;
+}
+
+.close-inline
+{
+    font-size: 21px;
+    font-weight: bold;
+    line-height: 1;
+    opacity: 0.2;
+    color: #fff;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    position: relative;
+    top: 3px;
+}
+
+.close-inline:hover
+{
+    opacity: 0.5;
+    text-decoration: none;
+    cursor: pointer;
+}
+

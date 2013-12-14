@@ -8,6 +8,10 @@
     <script src="inquiry.js"></script>
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="inquiry.css">
+    <meta charset="utf-8" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Expires" content="Sat, 26 Jan 2008 20:31:55 +0300" />
     <title>Publ.com Inquiry</title>
 </head>
 <body>
@@ -15,16 +19,18 @@
         <nav class="navbar navbar-inverse navbar-fixed-top">
             <div class="container">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="#/">Publ.com Inquiry</a>
+                    <a class="navbar-brand" href="#/"><span class="glyphicon glyphicon-cloud" id="logo"></span> Publ.com Inquiry</a>
                 </div>
                 <ul class="nav navbar-nav navbar-right">
                     <li ng-show="isLoggedIn()">
-                        <a href="#/" ng-click="logout()"><span class="glyphicon glyphicon-off"></span> Logout</a>
+                        <a href="" ng-click="logout()"><span class="glyphicon glyphicon-off"></span> Logout</a>
                     </li>
                 </ul>
             </div>
         </nav>
     </header>
-    <div ng-view style="padding-top: 50px"></div>
+    <div class="container">
+        <div ng-view></div>
+    </div>
 </body>
 </html>
