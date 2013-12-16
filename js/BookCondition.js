@@ -2,10 +2,11 @@ var BookConditionCtrl = function ($scope, $modalInstance, model, tools) {
 
     $scope.condFields = tools.Split(model.fields.books, 3);
     $scope.condRelations = tools.Split(model.relations.books, 3);
-    $scope.condType = false;
+    $scope.kind = false;
+    $scope.value = {};
 
     $scope.select = function(v, isComplete) {
-        $scope.condType = v;
+        $scope.kind = v;
 
         if(isComplete) {
             $scope.save();
@@ -15,15 +16,13 @@ var BookConditionCtrl = function ($scope, $modalInstance, model, tools) {
         $scope.operators = tools.SelectMany(
             model.operators[v.type],
             function(v) {
-                var trailer = v.inputs == 0 ? '.' : ':';
                 return [
-                    { id: v.id, caption: v.caption, inputs: v.inputs, trailer: trailer },
-                    { id: 'not-' + v.id, caption: v.negCaption, inputs: v.inputs, trailer: trailer }
+                    { id: v.id, caption: v.caption, inputs: v.inputs },
+                    { id: 'not-' + v.id, caption: v.negCaption, inputs: v.inputs }
                 ];
             }
         );
         $scope.operator = $scope.operators[0];
-        console.log($scope.operator);
     };
 
     $scope.setOperator = function(v) {
@@ -35,11 +34,15 @@ var BookConditionCtrl = function ($scope, $modalInstance, model, tools) {
     };
 
     $scope.showDetails = function () {
-        return !!$scope.condType;
+        return !!$scope.kind;
     };
 
     $scope.save = function() {
-        $modalInstance.close({ result: true });
+        $modalInstance.close({
+            kind: $scope.kind.id,
+            operator: $scope.operator.id,
+            value: $scope.value
+        });
     };
 
     $scope.dismiss = function() {

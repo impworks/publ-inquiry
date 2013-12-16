@@ -62,6 +62,17 @@
     cursor: pointer;
 }
 
+.form-control-inline
+{
+    width: 150px;
+}
+
+.glyphicon
+{
+    position: relative;
+    top: 2px;
+}
+
 /* Dialog fixes */
 .modal {
     display: block;
@@ -77,5 +88,36 @@
 .modal-header:after {
     display: table;
     content: " ";
+}
+
+/* Conditions */
+
+.condition
+{
+    margin: 20px 0;
+    padding: 20px;
+    border: 1px solid #eeeeee;
+    border-left: 3px solid #eeeeee;
+}
+
+.condition h4
+{
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+.condition p:last-child
+{
+    margin-bottom: 0;
+}
+
+.condition-field
+{
+    border-color: #faebcc;
+}
+
+.condition-join
+{
+    border-color: #bce8f1;
 }
 

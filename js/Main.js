@@ -35,7 +35,7 @@ var MainCtrl = function ($scope, $http, $location, $modal, globals, model, tools
 
         inst.result.then(
             function(v) {
-                alert(v.result);
+                alert(JSON.stringify(v));
             }
         )
     };

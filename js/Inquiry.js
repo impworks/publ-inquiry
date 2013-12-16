@@ -71,27 +71,27 @@ angular.module('inquiry', [ 'ngRoute', 'ui.bootstrap' ])
 
         var operators = {
             string: [
-                { id: 'equals', caption: 'equals', negCaption: 'differs from', inputs: 1 },
-                { id: 'contains', caption: 'contains', negCaption: 'does not contain', inputs: 1 },
+                { id: 'equals', caption: 'equals value', negCaption: 'differs from value', inputs: 1 },
+                { id: 'contains', caption: 'contains substring', negCaption: 'does not contain substring', inputs: 1 },
                 { id: 'null', caption: 'is set', negCaption: 'is unset', inputs: 0 }
             ],
 
             int: [
-                { id: 'equals', caption: 'equals', negCaption: 'differs from', inputs: 1 },
-                { id: 'greater', caption: 'is greater than', negCaption: 'is less than', inputs: 1 },
-                { id: 'between', caption: 'is between', negCaption: 'is outside', inputs: 2 },
+                { id: 'equals', caption: 'equals value', negCaption: 'differs from value', inputs: 1 },
+                { id: 'greater', caption: 'is greater than value', negCaption: 'is less than value', inputs: 1 },
+                { id: 'between', caption: 'is inside range', negCaption: 'is outside range', inputs: 2 },
                 { id: 'null', caption: 'is set', negCaption: 'is unset', inputs: 0 }
             ],
 
             size: [
-                { id: 'between', caption: 'is between', negCaption: 'is outside', inputs: 2 },
-                { id: 'greater', caption: 'is greater than', negCaption: 'is less than', inputs: 1 }
+                { id: 'between', caption: 'is inside range', negCaption: 'is outside range', inputs: 2 },
+                { id: 'greater', caption: 'is greater than value', negCaption: 'is less than value', inputs: 1 }
             ],
 
             date: [
-                { id: 'between', caption: 'is between', negCaption: 'is outside', inputs: 2 },
-                { id: 'equals', caption: 'equals', negCaption: 'differs from', inputs: 1 },
-                { id: 'greater', caption: 'is after', negCaption: 'is before', inputs: 1 },
+                { id: 'between', caption: 'is inside range', negCaption: 'is outside range', inputs: 2 },
+                { id: 'equals', caption: 'equals value', negCaption: 'differs from value', inputs: 1 },
+                { id: 'greater', caption: 'is after value', negCaption: 'is before value', inputs: 1 },
                 { id: 'null', caption: 'is set', negCaption: 'is unset', inputs: 0 }
             ],
 
