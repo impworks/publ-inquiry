@@ -94,10 +94,11 @@
 
 .condition
 {
-    margin: 20px 0;
-    padding: 20px;
+    margin: 4px 0;
+    padding: 8px;
     border: 1px solid #eeeeee;
-    border-left: 3px solid #eeeeee;
+    border-left: 6px solid #eeeeee;
+    width: 650px;
 }
 
 .condition h4
@@ -116,7 +117,7 @@
     border-color: #faebcc;
 }
 
-.condition-join
+.condition-relation
 {
     border-color: #bce8f1;
 }

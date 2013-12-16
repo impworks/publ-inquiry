@@ -33,6 +33,12 @@
             </div>
             are there on Publ.com?
         </h2>
+        <div ng-show="hasConditions()">
+            <div ng-repeat="cond in conditions" class="condition condition-{{cond.kind}}">
+                <a href="" ng-click="removeCondition(cond)" class="close">&times;</a>
+                <div ng-bind-html="cond.text"></div>
+            </div>
+        </div>
         <h3>
             <a href="" ng-click="pickCondition()">Where...</a>
         </h3>
