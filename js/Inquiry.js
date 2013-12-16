@@ -38,17 +38,17 @@ angular.module('inquiry', [ 'ngRoute', 'ui.bootstrap' ])
 
         var relations = {
             books: [
-                { id: 'book-owner', kind: 'one', caption: 'Book owner' },
-                { id: 'book-creator', kind: 'one', caption: 'Book creator' },
-                { id: 'book-series', kind: 'many', caption: 'Containing series' }
+                { id: 'book-owner', rel: 'one', caption: 'Book owner' },
+                { id: 'book-creator', rel: 'one', caption: 'Book creator' },
+                { id: 'book-series', rel: 'many', caption: 'Containing series' }
             ],
             users: [
-                { id: 'user-books', kind: 'many', caption: 'Books' },
-                { id: 'user-series', kind: 'many', caption: 'Series' }
+                { id: 'user-books', rel: 'many', caption: 'Books' },
+                { id: 'user-series', rel: 'many', caption: 'Series' }
             ],
             series: [
-                { id: 'series-owner', kind: 'one', caption: 'Series owner' },
-                { id: 'series-books', kind: 'many', caption: 'Books' },
+                { id: 'series-owner', rel: 'one', caption: 'Series owner' },
+                { id: 'series-books', rel: 'many', caption: 'Books' },
             ]
         };
 

@@ -11,7 +11,7 @@
                     <div ng-repeat="column in condFields" class="col-sm-4">
                         <ul>
                             <li ng-repeat="currField in column">
-                                <a href="" ng-click="select(currField)">{{currField.caption}}</a>
+                                <a href="" ng-click="selectField(currField)">{{currField.caption}}</a>
                             </li>
                         </ul>
                     </div>
@@ -21,7 +21,7 @@
                     <div ng-repeat="column in condRelations" class="col-sm-4">
                         <ul>
                             <li ng-repeat="rel in column">
-                                <a href="" ng-click="select(rel, true)">{{rel.caption}}</a>
+                                <a href="" ng-click="selectRelation(rel)">{{rel.caption}}</a>
                             </li>
                         </ul>
                     </div>
@@ -33,7 +33,7 @@
                         <label class="control-label col-sm-3">Condition</label>
                         <div class="col-sm-9">
                             <div class="form-control-static">
-                                {{kind.caption}}
+                                {{field.caption}}
                                 <div class="dropdown inline form-control-static">
                                     <a data-toggle="dropdown" href="" class="dropdown-toggle inner-link">{{operator.caption}}</a>
                                     <ul class="dropdown-menu" role="menu">
@@ -63,11 +63,11 @@
             </div>
         </div>
         <div ng-show="showDetails()" class="modal-footer">
-            <button type="button" class="btn btn-default pull-left" ng-click="select(false)">
+            <button type="button" class="btn btn-default pull-left" ng-click="selectField(false)">
                 <span class="glyphicon glyphicon-chevron-left"></span> Back
             </button>
             <button type="button" class="btn btn-default" ng-click="dismiss()">Cancel</button>
-            <button type="button" class="btn btn-primary" ng-click="save()">Add</button>
+            <button type="button" class="btn btn-primary" ng-click="saveField()" ng-disabled="!canSave()">Add</button>
         </div>
     </div>
 </div>

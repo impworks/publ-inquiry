@@ -1,18 +1,21 @@
 var BookConditionCtrl = function ($scope, $modalInstance, model, tools) {
 
+    var validateCondition = function(value) {
+        if(!$scope.field)
+            return false;
+
+        var type = $scope.field.type;
+        if(type == 'int' || type == 'size') return !isNaN(value);
+        return !!value;
+    };
+
     $scope.condFields = tools.Split(model.fields.books, 3);
     $scope.condRelations = tools.Split(model.relations.books, 3);
-    $scope.kind = false;
+    $scope.field = false;
     $scope.value = {};
 
-    $scope.select = function(v, isComplete) {
-        $scope.kind = v;
-
-        if(isComplete) {
-            $scope.save();
-            return;
-        }
-
+    $scope.selectField = function(v) {
+        $scope.field = v;
         $scope.operators = tools.SelectMany(
             model.operators[v.type],
             function(v) {
@@ -25,6 +28,20 @@ var BookConditionCtrl = function ($scope, $modalInstance, model, tools) {
         $scope.operator = $scope.operators[0];
     };
 
+    $scope.selectRelation = function(v) {
+        $modalInstance.close({
+            kind: 'relation',
+            id: v.id
+        })
+    };
+
+    $scope.canSave = function() {
+        if(!$scope.field) return false;
+        if($scope.operator.inputs == 0) return true;
+        if($scope.operator.inputs == 1) return validateCondition($scope.value.value);
+        return validateCondition($scope.value.from) && validateCondition($scope.value.to);
+    };
+
     $scope.setOperator = function(v) {
         $scope.operator = v;
     };
@@ -34,12 +51,13 @@ var BookConditionCtrl = function ($scope, $modalInstance, model, tools) {
     };
 
     $scope.showDetails = function () {
-        return !!$scope.kind;
+        return !!$scope.field;
     };
 
-    $scope.save = function() {
+    $scope.saveField = function() {
         $modalInstance.close({
-            kind: $scope.kind.id,
+            kind: 'field',
+            id: $scope.field.id,
             operator: $scope.operator.id,
             value: $scope.value
         });
