@@ -33,14 +33,18 @@
             </div>
             are there on Publ.com?
         </h2>
-        <div ng-show="hasConditions()">
+        <div class="condition-container">
+            <a href="" class="btn btn-default btn-xs pull-right" ng-click="clearConditions()" ng-show="hasConditions()"><span class="glyphicon glyphicon-remove"></span> Clear all</a>
+            <h3>
+                <a href="" ng-click="pickCondition()">Where...</a>
+            </h3>
             <div ng-repeat="cond in conditions" class="condition condition-{{cond.kind}}">
                 <a href="" ng-click="removeCondition(cond)" class="close">&times;</a>
                 <div ng-bind-html="cond.text"></div>
+                <div class="btn-group" ng-show="cond.kind == 'relation'">
+                    <a href="" ng-click="pickCondition()">Where...</a>
+                </div>
             </div>
         </div>
-        <h3>
-            <a href="" ng-click="pickCondition()">Where...</a>
-        </h3>
     </div>
 </div>

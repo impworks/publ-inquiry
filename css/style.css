@@ -98,7 +98,6 @@
     padding: 8px;
     border: 1px solid #eeeeee;
     border-left: 6px solid #eeeeee;
-    width: 650px;
 }
 
 .condition h4
@@ -122,3 +121,8 @@
     border-color: #bce8f1;
 }
 
+.condition-container
+{
+    width: 650px;
+    margin: 10px 0;
+}

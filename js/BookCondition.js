@@ -31,6 +31,7 @@ var BookConditionCtrl = function ($scope, $modalInstance, model, tools) {
     $scope.selectRelation = function(v) {
         $modalInstance.close({
             kind: 'relation',
+            rel: v.rel,
             id: v.id
         })
     };

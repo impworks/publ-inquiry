@@ -6,37 +6,48 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, globals, model,
         return;
     }
 
-    var resetList = function() {
-        $scope.conditions = [];
+    var htmlEnc = function(v) {
+        return v.replace(/</g, '&lt;').replace(/>/g, '&gt;');
     };
 
-    var wrap = function(v, tag) { return '<' + tag + '>' + v + '</' + tag + '>'; };
+    var wrap = function(v, tag) { return '<' + tag + '>' + htmlEnc(v) + '</' + tag + '>'; };
 
     var describeCondition = function(v) {
-        var isNeg = v.operator.substr(0, 4) == 'not-';
-        if (isNeg) v.operator = v.operator.substr(4);
+        if(v.kind == 'relation') {
+            var rel = tools.First(
+                model.relations[$scope.inquiryType.type],
+                function(x) { return x.id == v.id; }
+            );
 
-        var fld = tools.First(
-            model.fields[$scope.inquiryType.type],
-            function(x) { return v.id == x.id }
-        );
+            var cap = tools.Cap(rel.caption, false);
+            return rel.rel == 'one'
+                ? 'Restriction on ' + wrap(cap, 'strong') + '.'
+                : 'There are ' + wrap('N', 'strong') + ' items of ' + wrap(cap, 'strong') + '.';
+        } else {
+            var isNeg = v.operator.substr(0, 4) == 'not-';
+            if (isNeg) v.operator = v.operator.substr(4);
 
-        var op = tools.First(
-            model.operators[fld.type],
-            function(x) { return v.operator == x.id; }
-        );
+            var fld = tools.First(
+                model.fields[$scope.inquiryType.type],
+                function(x) { return v.id == x.id }
+            );
 
-        var rep = wrap(fld.caption, 'strong') + ' ' + (isNeg ? op.negCaption : op.caption) + (op.inputs ? ': ' : '.');
-        if(op.inputs == 1)
-            rep += wrap(v.value.value, 'strong');
-        else if(op.inputs == 2)
-            rep += wrap(v.value.from, 'strong') + ' and ' + wrap(v.value.to, 'strong');
+            var op = tools.First(
+                model.operators[fld.type],
+                function(x) { return v.operator == x.id; }
+            );
 
-        return rep;
+            var rep = wrap(fld.caption, 'strong') + ' ' + (isNeg ? op.negCaption : op.caption) + (op.inputs ? ': ' : '.');
+            if(op.inputs == 1)
+                rep += wrap(v.value.value, 'strong');
+            else if(op.inputs == 2)
+                rep += wrap(v.value.from, 'strong') + ' and ' + wrap(v.value.to, 'strong');
+
+            return rep;
+        }
     };
 
-    resetList();
-
+    $scope.conditions = [];
     $scope.inquiryType = model.inquiryTypes[0];
     $scope.inquiryTypes = model.inquiryTypes;
     var groupFields = model.groupFields;
@@ -77,5 +88,9 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, globals, model,
             function(x) { return x.pos == v.pos; }
         );
         $scope.conditions.splice(id, 1);
+    };
+
+    $scope.clearConditions = function () {
+        $scope.conditions = [];
     };
 };

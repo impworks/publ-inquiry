@@ -191,6 +191,12 @@ angular.module('inquiry', [ 'ngRoute', 'ui.bootstrap' ])
             }
             return res;
         };
+
+        this.Cap = function(v, isCap) {
+            if(!v) return undefined;
+            var first = v.substr(0, 1);
+            return isCap ? first.toUpperCase() : first.toLowerCase() + v.substr(1);
+        };
     })
     .config(function($routeProvider) {
         $routeProvider
