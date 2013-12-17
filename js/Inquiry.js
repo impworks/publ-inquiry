@@ -1,4 +1,4 @@
-angular.module('inquiry', [ 'ngRoute', 'ui.bootstrap' ])
+angular.module('inquiry', [ 'ngRoute', 'ui.bootstrap', '$strap.directives' ])
     .constant('endpoints', {
         publ: 'http://publ.com/Services/Admin.asmx',
         sso : 'https://logon.flippingbook.com/SSOThinClient.asmx'

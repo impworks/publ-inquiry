@@ -46,17 +46,22 @@
                         </div>
                     </div>
                     <div class="form-group" ng-show="inputCount(1)">
-                        <label class="control-label col-sm-3" for="value">Value</label>
+                        <label class="control-label col-sm-3">Value</label>
                         <div class="col-sm-4">
-                            <input id="value" class="form-control" type="text" ng-model="value.value" />
+                            <input class="form-control" type="text" ng-model="value.value" />
                         </div>
                      </div>
                     <div class="form-group" ng-show="inputCount(2)">
-                        <label class="control-label col-sm-3" for="from">Values</label>
-                        <div class="col-sm-9 form-inline">
-                            <input id="from" class="form-control form-control-inline" type="text" ng-model="value.from" />
+                        <label class="control-label col-sm-3">Values</label>
+                        <div class="col-sm-9 form-inline" ng-show="inputType('basic')">
+                            <input class="form-control form-control-inline" type="text" ng-model="value.from" />
                             —
-                            <input id="to" class="form-control form-control-inline" type="text" ng-model="value.to" />
+                            <input class="form-control form-control-inline" type="text" ng-model="value.to" />
+                        </div>
+                        <div class="col-sm-9 form-inline" ng-show="inputType('date')">
+                            <input class="form-control form-control-inline" type="text" ng-model="value.from" bs-datepicker data-date-format="yyyy/mm/dd" />
+                            —
+                            <input class="form-control form-control-inline" type="text" ng-model="value.to" bs-datepicker data-date-format="yyyy/mm/dd" />
                         </div>
                     </div>
                 </div>

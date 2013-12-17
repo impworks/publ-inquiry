@@ -51,6 +51,13 @@ var BookConditionCtrl = function ($scope, $modalInstance, model, tools) {
         return $scope.operator && $scope.operator.inputs == v;
     };
 
+    $scope.inputType = function(v) {
+        if(!$scope.field) return false;
+        if($scope.field.type == 'date' && v == 'date') return true;
+        if($scope.field.type != 'date' && v == 'basic') return true;
+        return false;
+    };
+
     $scope.showDetails = function () {
         return !!$scope.field;
     };
