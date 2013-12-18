@@ -5,7 +5,8 @@ var ConditionsCtrl = function ($scope, $modalInstance, model, tools, dataType) {
             return false;
 
         var type = $scope.field.type;
-        if(type == 'int' || type == 'size') return !isNaN(value);
+        if(type == 'int') return !isNaN(value);
+        if(type == 'size') return tools.ParseSize(value) > 0;
         return !!value;
     };
 
@@ -39,13 +40,6 @@ var ConditionsCtrl = function ($scope, $modalInstance, model, tools, dataType) {
         })
     };
 
-    $scope.canSave = function() {
-        if(!$scope.field) return false;
-        if($scope.operator.inputs == 0) return true;
-        if($scope.operator.inputs == 1) return validateCondition($scope.value.value);
-        return validateCondition($scope.value.from) && validateCondition($scope.value.to);
-    };
-
     $scope.setOperator = function(v) {
         $scope.operator = v;
     };
@@ -56,13 +50,20 @@ var ConditionsCtrl = function ($scope, $modalInstance, model, tools, dataType) {
 
     $scope.inputType = function(v) {
         if(!$scope.field) return false;
-        if($scope.field.type == 'date' && v == 'date') return true;
-        if($scope.field.type != 'date' && v == 'basic') return true;
+        if($scope.field.type == v) return true;
+        if(v == 'basic' && ['date'].indexOf($scope.field.type) == -1) return true;
         return false;
     };
 
     $scope.showDetails = function () {
         return !!$scope.field;
+    };
+
+    $scope.canSave = function() {
+        if(!$scope.field) return false;
+        if($scope.operator.inputs == 0) return true;
+        if($scope.operator.inputs == 1) return validateCondition($scope.value.value);
+        return validateCondition($scope.value.from) && validateCondition($scope.value.to);
     };
 
     $scope.saveField = function() {

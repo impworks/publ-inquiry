@@ -1,80 +1,82 @@
 <div class="modal-dialog">
     <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" ng-click="dismiss()" aria-hidden="true">
-                <span class="glyphicon glyphicon-remove"></span>
-            </button>
-            <h3 class="modal-title">{{caption}}</h3>
-        </div>
-        <div class="modal-body">
-            <div ng-hide="showDetails()">
-                <h4>Actual properties:</h4>
-                <div class="row">
-                    <div ng-repeat="column in condFields" class="col-sm-4">
-                        <ul>
-                            <li ng-repeat="currField in column">
-                                <a href="" ng-click="selectField(currField)">{{currField.caption}}</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <h4>Related data:</h4>
-                <div class="row">
-                    <div ng-repeat="column in condRelations" class="col-sm-4">
-                        <ul>
-                            <li ng-repeat="rel in column">
-                                <a href="" ng-click="selectRelation(rel)">{{rel.caption}}</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+        <form ng-submit="saveField()">
+            <div class="modal-header">
+                <button type="button" class="close" ng-click="dismiss()" aria-hidden="true">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </button>
+                <h3 class="modal-title">{{caption}}</h3>
             </div>
-            <div ng-show="showDetails()">
-                <div class="form form-horizontal">
-                    <div class="form-group">
-                        <label class="control-label col-sm-3">Condition</label>
-                        <div class="col-sm-9">
-                            <div class="form-control-static">
-                                {{field.caption}}
-                                <div class="dropdown inline form-control-static">
-                                    <a data-toggle="dropdown" href="" class="dropdown-toggle inner-link">{{operator.caption}}</a>
-                                    <ul class="dropdown-menu" role="menu">
-                                        <li ng-repeat="op in operators">
-                                            <a href="" ng-click="setOperator(op)">{{op.caption}}</a>
-                                        </li>
-                                    </ul>
+            <div class="modal-body">
+                <div ng-hide="showDetails()">
+                    <h4>Actual properties:</h4>
+                    <div class="row">
+                        <div ng-repeat="column in condFields" class="col-sm-4">
+                            <ul>
+                                <li ng-repeat="currField in column">
+                                    <a href="" ng-click="selectField(currField)">{{currField.caption}}</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <h4>Related data:</h4>
+                    <div class="row">
+                        <div ng-repeat="column in condRelations" class="col-sm-4">
+                            <ul>
+                                <li ng-repeat="rel in column">
+                                    <a href="" ng-click="selectRelation(rel)">{{rel.caption}}</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div ng-show="showDetails()">
+                    <div class="form form-horizontal">
+                        <div class="form-group">
+                            <label class="control-label col-sm-3">Condition</label>
+                            <div class="col-sm-9">
+                                <div class="form-control-static">
+                                    {{field.caption}}
+                                    <div class="dropdown inline form-control-static">
+                                        <a data-toggle="dropdown" href="" class="dropdown-toggle inner-link">{{operator.caption}}</a>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li ng-repeat="op in operators">
+                                                <a href="" ng-click="setOperator(op)">{{op.caption}}</a>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="form-group" ng-show="inputCount(1)">
-                        <label class="control-label col-sm-3">Value</label>
-                        <div class="col-sm-4">
-                            <input class="form-control" type="text" ng-model="value.value" />
-                        </div>
-                     </div>
-                    <div class="form-group" ng-show="inputCount(2)">
-                        <label class="control-label col-sm-3">Values</label>
-                        <div class="col-sm-9 form-inline" ng-show="inputType('basic')">
-                            <input class="form-control form-control-inline" type="text" ng-model="value.from" />
-                            —
-                            <input class="form-control form-control-inline" type="text" ng-model="value.to" />
-                        </div>
-                        <div class="col-sm-9 form-inline" ng-show="inputType('date')">
-                            <input class="form-control form-control-inline" type="text" ng-model="value.from" bs-datepicker data-date-format="yyyy/mm/dd" />
-                            —
-                            <input class="form-control form-control-inline" type="text" ng-model="value.to" bs-datepicker data-date-format="yyyy/mm/dd" />
+                        <div class="form-group" ng-show="inputCount(1)">
+                            <label class="control-label col-sm-3">Value</label>
+                            <div class="col-sm-4">
+                                <input class="form-control" type="text" ng-model="value.value" />
+                            </div>
+                         </div>
+                        <div class="form-group" ng-show="inputCount(2)">
+                            <label class="control-label col-sm-3">Values</label>
+                            <div class="col-sm-9 form-inline" ng-show="inputType('basic')">
+                                <input class="form-control form-control-inline" type="text" ng-model="value.from"/>
+                                —
+                                <input class="form-control form-control-inline" type="text" ng-model="value.to" />
+                            </div>
+                            <div class="col-sm-9 form-inline" ng-show="inputType('date')">
+                                <input class="form-control form-control-inline" type="text" ng-model="value.from" bs-datepicker data-date-format="yyyy/mm/dd" />
+                                —
+                                <input class="form-control form-control-inline" type="text" ng-model="value.to" bs-datepicker data-date-format="yyyy/mm/dd" />
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div ng-show="showDetails()" class="modal-footer">
-            <button type="button" class="btn btn-default pull-left" ng-click="selectField(false)">
-                <span class="glyphicon glyphicon-chevron-left"></span> Back
-            </button>
-            <button type="button" class="btn btn-default" ng-click="dismiss()">Cancel</button>
-            <button type="button" class="btn btn-primary" ng-click="saveField()" ng-disabled="!canSave()">Add</button>
-        </div>
+            <div ng-show="showDetails()" class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" ng-click="selectField(false)">
+                    <span class="glyphicon glyphicon-chevron-left"></span> Back
+                </button>
+                <button type="button" class="btn btn-default" ng-click="dismiss()">Cancel</button>
+                <button type="submit" class="btn btn-primary" ng-click="saveField()" ng-disabled="!canSave()">Add</button>
+            </div>
+        </form>
     </div>
 </div>
