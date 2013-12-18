@@ -75,12 +75,10 @@ angular.module('inquiry').service(
 
         this.ParseSize = function(v) {
             if(!v) return;
-            v = v.trim();
-            var rx = /^(0|[1-9][0-9]*)\s*(([kmgt]?b)?)$/i;
-            var match = v.match(rx);
+            var orders = { b: 0, kb: 1, mb: 2, gb: 3, tb: 4};
+            var match = v.trim().toLowerCase().match(/^(0|[1-9][0-9]*)\s*(([kmgt]?b)?)$/);
             if(!match) return;
-            var pow =['b', 'kb', 'mb', 'gb', 'tb'].indexOf(match[2].toLowerCase());
-            if(pow == -1 || !pow) pow = 0;
+            var pow = orders[match[2]] || 0;
             return Math.floor(match[1] * Math.pow(1024, pow));
         };
     }

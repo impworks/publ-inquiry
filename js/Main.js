@@ -7,6 +7,8 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, globals, model,
     }
 
     var htmlEnc = function(v) {
+        if(v instanceof Date)
+            v = v.format('yyyy/mm/dd');
         return v.replace(/</g, '&lt;').replace(/>/g, '&gt;');
     };
 
@@ -66,7 +68,7 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, globals, model,
     $scope.setInquiryType = function(v) {
         $scope.inquiryType = v;
         $scope.groupFields = model.groupFields[v.type];
-        resetList();
+        $scope.clearConditions();
     };
 
     $scope.pickCondition = function (parent) {
