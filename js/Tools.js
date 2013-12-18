@@ -74,3 +74,12 @@ angular.module('inquiry').service(
         };
     }
 );
+
+angular.module('inquiry').directive('ngFocus',
+    function() {
+        return {
+            scope: { trigger: '=ngFocus' },
+            link: function(scope, element) { scope.$watch('trigger', function(value) { if(value == true) element[0].focus(); } ); }
+        };
+    }
+);

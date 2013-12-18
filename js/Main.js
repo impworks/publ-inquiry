@@ -22,8 +22,8 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, globals, model,
 
             var cap = tools.Cap(rel.caption, false);
             return rel.rel == 'one'
-                ? 'Restriction on ' + wrap(cap, 'strong') + '.'
-                : 'There are ' + wrap('N', 'strong') + ' items of ' + wrap(cap, 'strong') + '.';
+                ? 'Restriction on ' + wrap(cap, 'strong')
+                : 'There are ' + wrap('N', 'tt') + ' items of ' + wrap(cap, 'strong');
         } else {
             var isNeg = v.operator.substr(0, 4) == 'not-';
             if (isNeg) v.operator = v.operator.substr(4);
@@ -38,11 +38,17 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, globals, model,
                 function(x) { return v.operator == x.id; }
             );
 
-            var rep = wrap(fld.caption, 'strong') + ' ' + (isNeg ? op.negCaption : op.caption) + (op.inputs ? ': ' : '.');
+            var getValue = function(kind) {
+                var res = v.value[kind];
+                if(fld.type == 'string') res = '"' + res + '"';
+                return wrap(res, 'tt');
+            };
+
+            var rep = wrap(fld.caption, 'strong') + ' ' + (isNeg ? op.negCaption : op.caption) + (op.inputs ? ': ' : '');
             if(op.inputs == 1)
-                rep += wrap(v.value.value, 'strong');
+                rep += getValue('value');
             else if(op.inputs == 2)
-                rep += wrap(v.value.from, 'strong') + ' and ' + wrap(v.value.to, 'strong');
+                rep += getValue('from') + ' and ' + getValue('to');
 
             return rep;
         }
