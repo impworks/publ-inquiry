@@ -1,4 +1,4 @@
-var ConditionsCtrl = function ($scope, $modalInstance, model, tools, dataType) {
+var ConditionsCtrl = function ($scope, $modalInstance, model, tools, focus, dataType) {
 
     var validateCondition = function(value) {
         if(!$scope.field)
@@ -8,6 +8,17 @@ var ConditionsCtrl = function ($scope, $modalInstance, model, tools, dataType) {
         if(type == 'int') return !isNaN(value);
         if(type == 'size') return tools.ParseSize(value) > 0;
         return !!value;
+    };
+
+    var typeEquals = function(type, value) {
+        if(type == value) return true;
+        if(value == 'basic' && ['date'].indexOf($scope.field.type) == -1) return true;
+        return false;
+    };
+
+    var updateFocus = function () {
+        var key = $scope.field.type == 'date' ? 'date' : 'basic' + '-' + $scope.operator.inputs;
+        focus(key);
     };
 
     $scope.caption = tools.Cap(dataType) + ' conditions';
@@ -28,6 +39,7 @@ var ConditionsCtrl = function ($scope, $modalInstance, model, tools, dataType) {
             }
         );
         $scope.operator = $scope.operators[0];
+        updateFocus();
     };
 
     $scope.selectRelation = function(v) {
@@ -42,6 +54,7 @@ var ConditionsCtrl = function ($scope, $modalInstance, model, tools, dataType) {
 
     $scope.setOperator = function(v) {
         $scope.operator = v;
+        updateFocus();
     };
 
     $scope.inputCount = function(v) {
@@ -49,10 +62,7 @@ var ConditionsCtrl = function ($scope, $modalInstance, model, tools, dataType) {
     };
 
     $scope.inputType = function(v) {
-        if(!$scope.field) return false;
-        if($scope.field.type == v) return true;
-        if(v == 'basic' && ['date'].indexOf($scope.field.type) == -1) return true;
-        return false;
+        return !$scope.field && typeEquals($scope.field.type, v);
     };
 
     $scope.showDetails = function () {

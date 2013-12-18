@@ -7,8 +7,7 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, globals, model,
     }
 
     var htmlEnc = function(v) {
-        if(v instanceof Date)
-            v = v.format('yyyy/mm/dd');
+        if(v instanceof Date) v = v.format('yyyy/mm/dd');
         return v.replace(/</g, '&lt;').replace(/>/g, '&gt;');
     };
 
