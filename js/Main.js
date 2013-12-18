@@ -62,7 +62,8 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, globals, model,
         resetList();
     };
 
-    $scope.pickCondition = function () {
+    $scope.pickCondition = function (parent) {
+        var target = parent ? parent.subs : $scope.conditions;
         var inst = $modal.open({
             templateUrl: 'dlgs/books-conditions.html',
             controller: BookConditionCtrl,
@@ -73,7 +74,8 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, globals, model,
             function(v) {
                 v.pos = $scope.conditions.length;
                 v.text = $sce.trustAsHtml(describeCondition(v));
-                $scope.conditions.push(v);
+                v.container = target;
+                target.push(v);
             }
         )
     };
@@ -83,11 +85,8 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, globals, model,
     };
 
     $scope.removeCondition = function(v) {
-        var id = tools.FirstId(
-            $scope.conditions,
-            function(x) { return x.pos == v.pos; }
-        );
-        $scope.conditions.splice(id, 1);
+        var id = v.container.indexOf(v);
+        v.container.splice(id, 1);
     };
 
     $scope.clearConditions = function () {

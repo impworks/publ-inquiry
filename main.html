@@ -38,13 +38,15 @@
             <h3>
                 <a href="" ng-click="pickCondition()">Where...</a>
             </h3>
-            <div ng-repeat="cond in conditions" class="condition condition-{{cond.kind}}">
-                <a href="" ng-click="removeCondition(cond)" class="close">&times;</a>
-                <div ng-bind-html="cond.text"></div>
-                <div class="btn-group" ng-show="cond.kind == 'relation'">
-                    <a href="" ng-click="pickCondition()">Where...</a>
-                </div>
-            </div>
+            <div ng-repeat="cond in conditions" class="condition condition-{{cond.kind}}" ng-include="'condition-tree-branch'"></div>
         </div>
     </div>
 </div>
+<script type="text/ng-template" id="condition-tree-branch">
+    <a href="" ng-click="removeCondition(cond)" class="close">&times;</a>
+    <div ng-bind-html="cond.text"></div>
+    <div ng-show="cond.kind == 'relation'">
+        <a href="" ng-click="pickCondition(cond)">Where...</a>
+        <div ng-repeat="cond in cond.subs" class="condition condition-{{cond.kind}}" ng-include="'condition-tree-branch'"></div>
+    </div>
+</script>
