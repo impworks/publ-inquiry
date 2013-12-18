@@ -1,4 +1,4 @@
-var BookConditionCtrl = function ($scope, $modalInstance, model, tools) {
+var ConditionsCtrl = function ($scope, $modalInstance, model, tools, dataType) {
 
     var validateCondition = function(value) {
         if(!$scope.field)
@@ -9,8 +9,9 @@ var BookConditionCtrl = function ($scope, $modalInstance, model, tools) {
         return !!value;
     };
 
-    $scope.condFields = tools.Split(model.fields.books, 3);
-    $scope.condRelations = tools.Split(model.relations.books, 3);
+    $scope.caption = tools.Cap(dataType) + ' conditions';
+    $scope.condFields = tools.Split(model.fields[dataType], 3);
+    $scope.condRelations = tools.Split(model.relations[dataType], 3);
     $scope.field = false;
     $scope.value = {};
 
@@ -33,6 +34,7 @@ var BookConditionCtrl = function ($scope, $modalInstance, model, tools) {
             kind: 'relation',
             rel: v.rel,
             id: v.id,
+            target: v.target,
             subs: []
         })
     };

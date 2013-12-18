@@ -34,19 +34,25 @@
             are there on Publ.com?
         </h2>
         <div class="condition-container">
-            <a href="" class="btn btn-default btn-xs pull-right" ng-click="clearConditions()" ng-show="hasConditions()"><span class="glyphicon glyphicon-remove"></span> Clear all</a>
+            <a href="" class="btn btn-default btn-xs pull-right" ng-click="clearConditions()" ng-show="hasConditions()">
+                <span class="glyphicon glyphicon-remove"></span> Clear all
+            </a>
             <h3>
                 <a href="" ng-click="pickCondition()">Where...</a>
             </h3>
-            <div ng-repeat="cond in conditions" class="condition condition-{{cond.kind}}" ng-include="'condition-tree-branch'"></div>
+            <div ng-repeat="cond in conditions" class="condition condition-{{cond.kind}}" ng-include="'condition-tree-branch'"
+                 ng-mouseenter="cond.isHovered=true" ng-mouseleave="cond.isHovered=false"></div>
         </div>
     </div>
 </div>
 <script type="text/ng-template" id="condition-tree-branch">
-    <a href="" ng-click="removeCondition(cond)" class="close">&times;</a>
+    <a href="" ng-click="removeCondition(cond)" ng-show="cond.isHovered" class="close">
+        <span class="glyphicon glyphicon-remove"></span>
+    </a>
     <div ng-bind-html="cond.text"></div>
     <div ng-show="cond.kind == 'relation'">
         <a href="" ng-click="pickCondition(cond)">Where...</a>
-        <div ng-repeat="cond in cond.subs" class="condition condition-{{cond.kind}}" ng-include="'condition-tree-branch'"></div>
+        <div ng-repeat="cond in cond.subs" class="condition condition-{{cond.kind}}" ng-include="'condition-tree-branch'"
+             ng-mouseenter="cond.isHovered=true" ng-mouseleave="cond.isHovered=false"></div>
     </div>
 </script>

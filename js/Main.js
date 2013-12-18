@@ -12,10 +12,11 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, globals, model,
 
     var wrap = function(v, tag) { return '<' + tag + '>' + htmlEnc(v) + '</' + tag + '>'; };
 
-    var describeCondition = function(v) {
+    var describeCondition = function(v, dataType) {
+        dataType = dataType || $scope.inquiryType.type;
         if(v.kind == 'relation') {
             var rel = tools.First(
-                model.relations[$scope.inquiryType.type],
+                model.relations[dataType],
                 function(x) { return x.id == v.id; }
             );
 
@@ -28,7 +29,7 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, globals, model,
             if (isNeg) v.operator = v.operator.substr(4);
 
             var fld = tools.First(
-                model.fields[$scope.inquiryType.type],
+                model.fields[dataType],
                 function(x) { return v.id == x.id }
             );
 
@@ -64,17 +65,19 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, globals, model,
 
     $scope.pickCondition = function (parent) {
         var target = parent ? parent.subs : $scope.conditions;
+        var dataType = parent ? parent.target : $scope.inquiryType.type;
         var inst = $modal.open({
-            templateUrl: 'dlgs/books-conditions.html',
-            controller: BookConditionCtrl,
-            resolve: { }
+            templateUrl: 'conditions.html',
+            controller: ConditionsCtrl,
+            resolve: { dataType: function() { return dataType; } }
         });
 
         inst.result.then(
             function(v) {
                 v.pos = $scope.conditions.length;
-                v.text = $sce.trustAsHtml(describeCondition(v));
+                v.text = $sce.trustAsHtml(describeCondition(v, dataType));
                 v.container = target;
+                v.isHovered = false;
                 target.push(v);
             }
         )
