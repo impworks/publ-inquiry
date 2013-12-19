@@ -9,7 +9,11 @@ angular.module('inquiry', [ 'ngRoute', 'ui.bootstrap', '$strap.directives' ])
             get token() { return ls.token && JSON.parse(ls.token); },
             set token(t) { ls.token = JSON.stringify(t); },
             get login() { return ls.login && JSON.parse(ls.login); },
-            set login(t) { ls.login = JSON.stringify(t); }
+            set login(t) { ls.login = JSON.stringify(t); },
+            get savedInquiries() { return ls.savedInquiries && JSON.parse(ls.savedInquiries); },
+            set savedInquiries(t) { ls.savedInquiries = JSON.stringify(t); },
+
+            inquiryTransport: { }
         };
     })
     .config(function($routeProvider) {
@@ -22,6 +26,10 @@ angular.module('inquiry', [ 'ngRoute', 'ui.bootstrap', '$strap.directives' ])
                 controller: 'MainCtrl',
                 templateUrl: 'main.html'
             })
+            .when('/saved', {
+                controller: 'SavedCtrl',
+                templateUrl: 'saved.html'
+            })
             .otherwise({
                 redirectTo: '/'
             });
@@ -29,4 +37,5 @@ angular.module('inquiry', [ 'ngRoute', 'ui.bootstrap', '$strap.directives' ])
     .controller('GlobalCtrl', GlobalCtrl)
     .controller('LoginCtrl', LoginCtrl)
     .controller('ConditionsCtrl', ConditionsCtrl)
+    .controller('SavedCtrl', SavedCtrl)
     .controller('MainCtrl', MainCtrl);

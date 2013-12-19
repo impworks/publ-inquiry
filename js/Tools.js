@@ -1,6 +1,7 @@
 angular.module('inquiry').service(
     'tools',
     function() {
+        var self = this;
         var find = function(arr, cnd) {
             if(arr && arr.length) {
                 for(var i = 0; i < arr.length; i++) {
@@ -64,6 +65,22 @@ angular.module('inquiry').service(
                     res[k].push(arr[i]);
             }
             return res;
+        };
+
+        this.Remove = function(arr, item) {
+            var idx = arr.indexOf(item);
+            arr.splice(idx, 1);
+        };
+
+        this.RemoveBy = function(arr, cnd) {
+            var items = [];
+            for(var i = 0; i < arr.length; i++) {
+                var curr = arr[i];
+                if(cnd(curr)) items.push(curr);
+            }
+
+            for(i = 0; i < items.length; i++)
+                self.Remove(arr, items[i]);
         };
 
         this.Cap = function(v, isCap) {

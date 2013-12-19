@@ -95,8 +95,7 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, globals, model,
     };
 
     $scope.removeCondition = function(v) {
-        var id = v.container.indexOf(v);
-        v.container.splice(id, 1);
+        tools.Remove(v.container, v);
     };
 
     $scope.clearConditions = function () {
