@@ -22,7 +22,6 @@
 
 #sidebar
 {
-    margin-top: 20px;
     width: 200px;
 }
 
@@ -62,6 +61,13 @@
     cursor: pointer;
 }
 
+.close-offset
+{
+    position: relative;
+    top: 0;
+    right: 4px;
+}
+
 .form-control-inline
 {
     width: 150px;
@@ -95,23 +101,36 @@
 .condition
 {
     margin: 4px 0;
-    padding: 0 0 0 8px;
+    padding: 6px 0 6px 12px;
     border-style: solid;
-    border-width: 0 0 0 8px;
+    border-width: 0 0 0 6px;
+}
+
+.condition h4
+{
+    margin: 0;
 }
 
 .condition-field
 {
-    border-color: #faebcc;
+    border-color: #357ebd;
+    background-color: #f4f8fa;
 }
 
 .condition-relation
 {
-    border-color: #bce8f1;
+    border-color: #ed9c28;
+    background-color: #faf8f0;
 }
 
 .condition-container
 {
     width: 650px;
-    margin: 10px 0;
+    margin: 30px 0 10px 0;
+}
+
+.restriction-header
+{
+    display: inline-block;
+    height: 12px;
 }

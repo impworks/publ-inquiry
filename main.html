@@ -1,26 +1,26 @@
 <div style="padding-top:64px">
-    <div class="pull-right" id="sidebar">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                Filter
-            </div>
-            <div class="panel-body">
-                <div class="form">
-                    <div class="form-group">
-                        <label class="control-label">Group by</label>
-                        <div class="checkbox" ng-repeat="curr in getGroupFields()">
-                            <label>
-                                <input type="checkbox" ng-model="curr.selected" />
-                                {{curr.name}}
-                            </label>
+    <div>
+        <div class="pull-right" id="sidebar">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Filter
+                </div>
+                <div class="panel-body">
+                    <div class="form">
+                        <div class="form-group">
+                            <label class="control-label">Group by</label>
+                            <div class="checkbox" ng-repeat="curr in getGroupFields()">
+                                <label>
+                                    <input type="checkbox" ng-model="curr.selected" />
+                                    {{curr.name}}
+                                </label>
+                            </div>
                         </div>
+                        <a href="" ng-click="find()" class="btn btn-primary btn-lg btn-block">Show me!</a>
                     </div>
-                    <a href="" ng-click="find()" class="btn btn-primary btn-lg btn-block">Show me!</a>
                 </div>
             </div>
         </div>
-    </div>
-    <div>
         <h2>
             How many
             <div class="dropdown inline">
@@ -34,24 +34,28 @@
             are there on Publ.com?
         </h2>
         <div class="condition-container">
-            <a href="" class="btn btn-default btn-xs pull-right" ng-click="clearConditions()" ng-show="hasConditions()">
-                <span class="glyphicon glyphicon-remove"></span> Clear all
+            <a href="" ng-click="pickCondition()" class="btn btn-default btn-lg" title="Add condition">
+                <span class="glyphicon glyphicon-search"></span> Where...
             </a>
-            <h3>
-                <a href="" ng-click="pickCondition()">Where...</a>
-            </h3>
-            <div ng-repeat="cond in conditions" class="condition condition-{{cond.kind}}" ng-include="'condition-tree-branch'"
-                 ng-mouseenter="cond.isHovered=true" ng-mouseleave="cond.isHovered=false"></div>
+            <!--<a href="" class="btn btn-default btn-lg" ng-click="clearConditions()" ng-show="hasConditions()" title="Clear all conditions">-->
+                <!--<span class="glyphicon glyphicon-remove"></span>-->
+            <!--</a>-->
+            <div style="margin-top: 24px">
+                <div ng-repeat="cond in conditions" class="condition condition-{{cond.kind}}" ng-include="'condition-tree-branch'"
+                     ng-mouseenter="cond.isHovered=true" ng-mouseleave="cond.isHovered=false"></div>
+            </div>
         </div>
     </div>
 </div>
 <script type="text/ng-template" id="condition-tree-branch">
-    <a href="" ng-click="removeCondition(cond)" ng-show="cond.isHovered" class="close">
+    <a href="" ng-click="removeCondition(cond)" ng-show="cond.isHovered" class="close close-offset" title="Remove condition">
         <span class="glyphicon glyphicon-remove"></span>
     </a>
-    <div ng-bind-html="cond.text"></div>
+    <span ng-bind-html="cond.text"></span>
+    <span class="restriction-header">
+        <a href="" class="btn btn-default btn-xs" ng-click="pickCondition(cond)" ng-show="showWhere(cond)">Where...</a>
+    </span>
     <div ng-show="cond.kind == 'relation'">
-        <a href="" ng-click="pickCondition(cond)">Where...</a>
         <div ng-repeat="cond in cond.subs" class="condition condition-{{cond.kind}}" ng-include="'condition-tree-branch'"
              ng-mouseenter="cond.isHovered=true" ng-mouseleave="cond.isHovered=false"></div>
     </div>

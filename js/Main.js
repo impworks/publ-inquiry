@@ -23,7 +23,7 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, globals, model,
 
             var cap = tools.Cap(rel.caption, false);
             return rel.rel == 'one'
-                ? 'Restriction on ' + wrap(cap, 'strong')
+                ? 'Restriction on ' + wrap(cap, 'strong') + ':'
                 : 'There are ' + wrap('N', 'tt') + ' items of ' + wrap(cap, 'strong');
         } else {
             var isNeg = v.operator.substr(0, 4) == 'not-';
@@ -62,6 +62,11 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, globals, model,
 
     $scope.getGroupFields = function() {
         return groupFields[$scope.inquiryType.type];
+    };
+
+    $scope.showWhere = function(v) {
+        return v.kind == 'relation'
+               && (v.isHovered || !v.subs || !v.subs.length);
     };
 
     $scope.setInquiryType = function(v) {
