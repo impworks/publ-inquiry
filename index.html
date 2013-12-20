@@ -13,6 +13,7 @@
     <script src="js/Global.js"></script>
     <script src="js/Login.js"></script>
     <script src="js/Main.js"></script>
+    <script src="js/Saved.js"></script>
     <script src="js/Inquiry.js"></script>
     <script src="js/Tools.js"></script>
     <script src="js/Model.js"></script>
@@ -32,15 +33,20 @@
                 <div class="navbar-header">
                     <a class="navbar-brand" href="#/"><span class="glyphicon glyphicon-cloud" id="logo"></span> Publ.com Inquiry</a>
                 </div>
-                <ul class="nav navbar-nav navbar-right">
-                    <li ng-show="isLoggedIn()">
+                <ul class="nav navbar-nav" ng-show="isLoggedIn()">
+                    <li>
+                        <a href="#/saved"><span class="glyphicon glyphicon-list"></span> Saved inquiries</a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right" ng-show="isLoggedIn()">
+                    <li>
                         <a href="" ng-click="logout()"><span class="glyphicon glyphicon-off"></span> Logout</a>
                     </li>
                 </ul>
             </div>
         </nav>
     </header>
-    <div class="container">
+    <div class="container container-main">
         <div ng-view></div>
     </div>
 </body>

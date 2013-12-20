@@ -1,4 +1,4 @@
-<div style="margin-top: 64px">
+<div ng-hide="isEmpty()">
     <div ng-repeat="curr in list" ng-mouseenter="curr.isHovered=true" ng-mouseleave="curr.isHovered=false">
         <a href="" ng-click="remove(curr)" class="pull-right" ng-show="curr.isHovered">
             <span class="glyphicon glyphicon-remove"></span>
@@ -6,4 +6,8 @@
         <h3><a href="" ng-click="load(curr)">{{curr.caption}}</a></h3>
         <span class="text-muted">Saved: {{curr.date}}</span>
     </div>
+</div>
+<div ng-show="isEmpty()">
+    <h2>No inquiries have been saved yet.</h2>
+    <p>Feel free to <a href="#/main">create a new inquiry</a> to Publ.com and press the <tt>Save</tt> button.</p>
 </div>

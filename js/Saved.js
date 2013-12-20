@@ -15,6 +15,10 @@ var SavedCtrl = function ($scope, $location, globals, model, tools) {
 //        globals.inquiryTransport.toSave = undefined;
 //    };
 
+    $scope.isEmpty = function() {
+        return !$scope.list || !$scope.list.length;
+    };
+
     $scope.load = function(inq) {
         globals.inquiryTransport.toLoad = inq.value;
         $location.path('/main');

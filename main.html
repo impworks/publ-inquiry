@@ -1,50 +1,46 @@
-<div style="padding-top:64px">
-    <div>
-        <div class="pull-right" id="sidebar">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Filter
-                </div>
-                <div class="panel-body">
-                    <div class="form">
-                        <div class="form-group">
-                            <label class="control-label">Group by</label>
-                            <div class="checkbox" ng-repeat="curr in getGroupFields()">
-                                <label>
-                                    <input type="checkbox" ng-model="curr.selected" />
-                                    {{curr.name}}
-                                </label>
-                            </div>
-                        </div>
-                        <a href="" ng-click="find()" class="btn btn-primary btn-lg btn-block">Show me!</a>
+<div class="pull-right" id="sidebar">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            Filter
+        </div>
+        <div class="panel-body">
+            <div class="form">
+                <div class="form-group">
+                    <label class="control-label">Group by</label>
+                    <div class="checkbox" ng-repeat="curr in getGroupFields()">
+                        <label>
+                            <input type="checkbox" ng-model="curr.selected" />
+                            {{curr.name}}
+                        </label>
                     </div>
                 </div>
+                <a href="" ng-click="find()" class="btn btn-primary btn-lg btn-block">Show me!</a>
             </div>
         </div>
-        <h2>
-            How many
-            <div class="dropdown inline">
-                <a data-toggle="dropdown" href="" class="dropdown-toggle inner-link">{{inquiryType.name}}</a>
-                <ul class="dropdown-menu" role="menu">
-                    <li ng-repeat="inq in inquiryTypes">
-                        <a href="" ng-click="setInquiryType(inq)">{{inq.name}}</a>
-                    </li>
-                </ul>
-            </div>
-            are there on Publ.com?
-        </h2>
-        <div class="condition-container">
-            <a href="" ng-click="pickCondition()" class="btn btn-default btn-lg" title="Add condition">
-                <span class="glyphicon glyphicon-search"></span> Where...
-            </a>
-            <!--<a href="" class="btn btn-default btn-lg" ng-click="clearConditions()" ng-show="hasConditions()" title="Clear all conditions">-->
-                <!--<span class="glyphicon glyphicon-remove"></span>-->
-            <!--</a>-->
-            <div style="margin-top: 24px">
-                <div ng-repeat="cond in conditions" class="condition condition-{{cond.kind}}" ng-include="'condition-tree-branch'"
-                     ng-mouseenter="cond.isHovered=true" ng-mouseleave="cond.isHovered=false"></div>
-            </div>
-        </div>
+    </div>
+</div>
+<h2>
+    How many
+    <div class="dropdown inline">
+        <a data-toggle="dropdown" href="" class="dropdown-toggle inner-link">{{inquiryType.name}}</a>
+        <ul class="dropdown-menu" role="menu">
+            <li ng-repeat="inq in inquiryTypes">
+                <a href="" ng-click="setInquiryType(inq)">{{inq.name}}</a>
+            </li>
+        </ul>
+    </div>
+    are there on Publ.com?
+</h2>
+<div class="condition-container">
+    <a href="" ng-click="pickCondition()" class="btn btn-default btn-lg" title="Add condition">
+        <span class="glyphicon glyphicon-search"></span> Where...
+    </a>
+    <!--<a href="" class="btn btn-default btn-lg" ng-click="clearConditions()" ng-show="hasConditions()" title="Clear all conditions">-->
+        <!--<span class="glyphicon glyphicon-remove"></span>-->
+    <!--</a>-->
+    <div style="margin-top: 24px">
+        <div ng-repeat="cond in conditions" class="condition condition-{{cond.kind}}" ng-include="'condition-tree-branch'"
+             ng-mouseenter="cond.isHovered=true" ng-mouseleave="cond.isHovered=false"></div>
     </div>
 </div>
 <script type="text/ng-template" id="condition-tree-branch">

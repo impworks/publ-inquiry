@@ -35,6 +35,11 @@
     width: 900px;
 }
 
+.container-main
+{
+    margin-top: 90px;
+}
+
 .inline
 {
     display: inline;
@@ -73,7 +78,14 @@
     width: 150px;
 }
 
+/* Bootstrap fixes */
 .glyphicon
+{
+    position: relative;
+    top: 2px;
+}
+
+ul.navbar-nav li
 {
     position: relative;
     top: 2px;

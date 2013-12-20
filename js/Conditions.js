@@ -62,7 +62,7 @@ var ConditionsCtrl = function ($scope, $modalInstance, model, tools, focus, data
     };
 
     $scope.inputType = function(v) {
-        return !$scope.field && typeEquals($scope.field.type, v);
+        return $scope.field && typeEquals($scope.field.type, v);
     };
 
     $scope.showDetails = function () {
