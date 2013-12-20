@@ -1,17 +1,10 @@
-var MainCtrl = function ($scope, $http, $location, $modal, $sce, globals, model, tools) {
+var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, globals, model, tools) {
 
     // check auth
     if(!globals.token) {
         $location.path('/');
         return;
     }
-
-    var htmlEnc = function(v) {
-        if(v instanceof Date) v = v.format('yyyy/mm/dd');
-        return v.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    };
-
-    var wrap = function(v, tag) { return '<' + tag + '>' + htmlEnc(v) + '</' + tag + '>'; };
 
     var describeCondition = function(v, dataType) {
         dataType = dataType || $scope.inquiryType.type;
@@ -23,8 +16,8 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, globals, model,
 
             var cap = tools.Cap(rel.caption, false);
             return rel.rel == 'one'
-                ? 'Restriction on ' + wrap(cap, 'strong') + ':'
-                : 'There are ' + wrap('N', 'tt') + ' items of ' + wrap(cap, 'strong');
+                ? 'Restriction on ' + tools.Wrap(cap, 'strong') + ':'
+                : 'There are ' + tools.Wrap('N', 'tt') + ' items of ' + tools.Wrap(cap, 'strong');
         } else {
             var isNeg = v.operator.substr(0, 4) == 'not-';
             if (isNeg) v.operator = v.operator.substr(4);
@@ -42,10 +35,10 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, globals, model,
             var getValue = function(kind) {
                 var res = v.value[kind];
                 if(fld.type == 'string') res = '"' + res + '"';
-                return wrap(res, 'tt');
+                return tools.Wrap(res, 'tt');
             };
 
-            var rep = wrap(fld.caption, 'strong') + ' ' + (isNeg ? op.negCaption : op.caption) + (op.inputs ? ': ' : '');
+            var rep = tools.Wrap(fld.caption, 'strong') + ' ' + (isNeg ? op.negCaption : op.caption) + (op.inputs ? ': ' : '');
             if(op.inputs == 1)
                 rep += getValue('value');
             else if(op.inputs == 2)
@@ -55,18 +48,24 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, globals, model,
         }
     };
 
-    $scope.conditions = [];
-    $scope.inquiryType = model.inquiryTypes[0];
     $scope.inquiryTypes = model.inquiryTypes;
-    var groupFields = model.groupFields;
-
-    $scope.getGroupFields = function() {
-        return groupFields[$scope.inquiryType.type];
-    };
+    if(globals.inquiryToLoad) {
+        loadInquiry(globals.inquiryToLoad);
+    } else {
+        $scope.conditions = [];
+        $scope.inquiryType = model.inquiryTypes[0];
+        $scope.groupFields = angular.copy(model.groupFields[$scope.inquiryType.type]);
+    }
 
     $scope.showWhere = function(v) {
         return v.kind == 'relation'
                && (v.isHovered || !v.subs || !v.subs.length);
+    };
+
+    $scope.clear = function () {
+        $scope.conditions = [];
+        $scope.inquiryType = model.inquiryTypes[0];
+        $scope.groupFields = angular.copy(model.groupFields[$scope.inquiryType.type]);
     };
 
     $scope.setInquiryType = function(v) {
@@ -105,5 +104,73 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, globals, model,
 
     $scope.clearConditions = function () {
         $scope.conditions = [];
+    };
+
+    /**
+     * Saving & loading
+     */
+
+    var wakeUp = function(list, dataType) {
+        if(!list || !list.length) return;
+        for(var i = 0; i < list.length; i++) {
+            var curr = list[i];
+            curr.container = list;
+            curr.text = $sce.trustAsHtml(describeCondition(curr, dataType));
+            if(curr.kind == 'relation')
+                wakeUp(curr.subs, curr.target);
+        }
+    };
+
+    var hibernate = function(list) {
+        if(!list || !list.length) return;
+        for(var i = 0; i < list.length; i++) {
+            var curr = list[i];
+            delete curr.container;
+            delete curr.text;
+            if(curr.subs) hibernate(curr.subs);
+        }
+    };
+
+    var loadInquiry = function(v) {
+        if(!globals.inquiryToLoad) return;
+
+        var inq = globals.inquiryToLoad.value;
+        wakeUp(inq.conditions, inq.type.type);
+
+        $scope.conditions = inq.conditions;
+        $scope.inquiryType = inq.type;
+        $scope.groupFields = inq.group;
+
+        globals.inquiryToLoad = false;
+    };
+
+    var saveInquiry = function() {
+        hibernate($scope.conditions);
+        globals.saveInquiry({
+            caption: $scope.saveInfo.name,
+            date: new Date(),
+            value: {
+                conditions: $scope.conditions,
+                type: $scope.inquiryType,
+                group: $scope.groupFields
+            }
+        });
+        wakeUp($scope.conditions, $scope.inquiryType.type);
+    };
+
+    $scope.saveInfo = { name: '' };
+
+    $scope.canSave = function() {
+        return !!$scope.saveInfo.name;
+    };
+
+    $scope.save = function () {
+        if(!$scope.canSave())
+            return;
+
+        saveInquiry();
+
+        $('.popover.in').popover('hide');
+        $rootScope.$broadcast('saved-increment');
     };
 };

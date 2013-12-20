@@ -6,8 +6,14 @@
         <div class="panel-body">
             <div class="form">
                 <div class="form-group">
+                    <div class="btn-group btn-group-justified">
+                        <a href="" class="btn btn-default btn-xs" bs-popover="'save-popover'" data-placement="left" data-container="#sidebar">Save inquiry</a>
+                        <a href="" ng-click="clear()" class="btn btn-default btn-xs">Clear</a>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label class="control-label">Group by</label>
-                    <div class="checkbox" ng-repeat="curr in getGroupFields()">
+                    <div class="checkbox" ng-repeat="curr in groupFields">
                         <label>
                             <input type="checkbox" ng-model="curr.selected" />
                             {{curr.name}}
@@ -44,15 +50,25 @@
     </div>
 </div>
 <script type="text/ng-template" id="condition-tree-branch">
-    <a href="" ng-click="removeCondition(cond)" ng-show="cond.isHovered" class="close close-offset" title="Remove condition">
-        <span class="glyphicon glyphicon-remove"></span>
-    </a>
-    <span ng-bind-html="cond.text"></span>
-    <span class="restriction-header">
-        <a href="" class="btn btn-default btn-xs" ng-click="pickCondition(cond)" ng-show="showWhere(cond)">Where...</a>
-    </span>
-    <div ng-show="cond.kind == 'relation'">
-        <div ng-repeat="cond in cond.subs" class="condition condition-{{cond.kind}}" ng-include="'condition-tree-branch'"
-             ng-mouseenter="cond.isHovered=true" ng-mouseleave="cond.isHovered=false"></div>
+    <div>
+        <a href="" ng-click="removeCondition(cond)" ng-show="cond.isHovered" class="close close-offset" title="Remove condition">
+            <span class="glyphicon glyphicon-remove"></span>
+        </a>
+        <span ng-bind-html="cond.text"></span>
+        <span class="restriction-header">
+            <a href="" class="btn btn-default btn-xs" ng-click="pickCondition(cond)" ng-show="showWhere(cond)">Where...</a>
+        </span>
+        <div ng-show="cond.kind == 'relation'">
+            <div ng-repeat="cond in cond.subs" class="condition condition-{{cond.kind}}" ng-include="'condition-tree-branch'"
+                 ng-mouseenter="cond.isHovered=true" ng-mouseleave="cond.isHovered=false"></div>
+        </div>
     </div>
+</script>
+<script type="text/ng-template" id="save-popover">
+    <form ng-submit="save()" class="form form-inline">
+        <div class="form-group">
+            <input type="text" class="form-control" placeholder="Inquiry name" ng-model="saveInfo.name" />
+        </div>
+        <button type="submit" class="btn btn-primary" ng-disabled="!canSave()">Save</button>
+    </form>
 </script>

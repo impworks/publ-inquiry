@@ -1,6 +1,6 @@
 angular.module('inquiry').service(
     'tools',
-    function() {
+    function($sce) {
         var self = this;
         var find = function(arr, cnd) {
             if(arr && arr.length) {
@@ -44,6 +44,15 @@ angular.module('inquiry').service(
             return result;
         };
 
+        this.Count = function(arr, cnd) {
+            var count = 0;
+            if(arr && arr.length)
+                for(var i = 0; i < arr.length; i++)
+                    if(cnd(arr[i]))
+                        count++;
+            return count;
+        };
+
         this.Contains = function(arr, cnd) {
             return typeof find(arr, cnd).index !== 'undefined';
         };
@@ -68,7 +77,9 @@ angular.module('inquiry').service(
         };
 
         this.Remove = function(arr, item) {
+            if(!arr || !arr.length || typeof item === 'undefined') return;
             var idx = arr.indexOf(item);
+            if(idx != -1) return;
             arr.splice(idx, 1);
         };
 
@@ -97,6 +108,18 @@ angular.module('inquiry').service(
             if(!match) return;
             var pow = orders[match[2]] || 0;
             return Math.floor(match[1] * Math.pow(1024, pow));
+        };
+
+        this.HtmlEncode = function(v) {
+            if(v instanceof Date) v = v.format('yyyy/mm/dd');
+            if(!(v instanceof String)) v = v.toString();
+            return v.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        };
+
+        this.Wrap = function(str, tag, attrs) {
+            if(attrs) attrs = ' ' + attrs;
+            else attrs = '';
+            return $sce.trustAsHtml('<' + tag + attrs + '>' + self.HtmlEncode(str) + '</' + tag + '>');
         };
     }
 );
