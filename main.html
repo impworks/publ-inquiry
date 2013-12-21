@@ -41,9 +41,6 @@
     <a href="" ng-click="pickCondition()" class="btn btn-default btn-lg" title="Add condition">
         <span class="glyphicon glyphicon-search"></span> Where...
     </a>
-    <!--<a href="" class="btn btn-default btn-lg" ng-click="clearConditions()" ng-show="hasConditions()" title="Clear all conditions">-->
-        <!--<span class="glyphicon glyphicon-remove"></span>-->
-    <!--</a>-->
     <div style="margin-top: 24px">
         <div ng-repeat="cond in conditions" class="condition condition-{{cond.kind}}" ng-include="'condition-tree-branch'"
              ng-mouseenter="cond.isHovered=true" ng-mouseleave="cond.isHovered=false"></div>

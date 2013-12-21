@@ -4,6 +4,7 @@
         <thead>
             <tr>
                 <th width="40%">Caption</th>
+                <th>Created at</th>
                 <th>Inquiry type</th>
                 <th>Conditions</th>
                 <th>Grouping</th>
@@ -13,6 +14,7 @@
         <tbody>
             <tr ng-repeat="curr in list">
                 <td><strong><a href="" ng-click="load(curr)">{{curr.caption}}</a></strong></td>
+                <td>{{getDate(curr)}}</td>
                 <td><tt>{{getType(curr)}}</tt></td>
                 <td ng-bind-html="getConditions(curr)"></td>
                 <td ng-bind-html="getGrouping(curr)"></td>

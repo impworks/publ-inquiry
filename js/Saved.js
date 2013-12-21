@@ -19,6 +19,10 @@ var SavedCtrl = function ($scope, $location, $rootScope, globals, model, tools) 
         if(id !== -1) $scope.list.splice(id, 1);
     };
 
+    $scope.getDate = function(v) {
+        return tools.DateFormat(new Date(v.date));
+    };
+
     $scope.getType = function(v) {
         return v.value.type.type;
     };

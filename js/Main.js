@@ -48,6 +48,54 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, glo
         }
     };
 
+    var wakeUp = function(list, dataType) {
+        if(!list || !list.length) return;
+        for(var i = 0; i < list.length; i++) {
+            var curr = list[i];
+            curr.container = list;
+            curr.text = $sce.trustAsHtml(describeCondition(curr, dataType));
+            if(curr.kind == 'relation')
+                wakeUp(curr.subs, curr.target);
+        }
+    };
+
+    var hibernate = function(list) {
+        if(!list || !list.length) return;
+        for(var i = 0; i < list.length; i++) {
+            var curr = list[i];
+            delete curr.container;
+            delete curr.text;
+            if(curr.subs) hibernate(curr.subs);
+        }
+    };
+
+    var loadInquiry = function(v) {
+        if(!globals.inquiryToLoad) return;
+
+        var inq = globals.inquiryToLoad.value;
+        wakeUp(inq.conditions, inq.type.type);
+
+        $scope.conditions = inq.conditions;
+        $scope.inquiryType = inq.type;
+        $scope.groupFields = inq.group;
+
+        globals.inquiryToLoad = false;
+    };
+
+    var saveInquiry = function() {
+        hibernate($scope.conditions);
+        globals.saveInquiry({
+            caption: $scope.saveInfo.name,
+            date: new Date(),
+            value: {
+                conditions: $scope.conditions,
+                type: $scope.inquiryType,
+                group: $scope.groupFields
+            }
+        });
+        wakeUp($scope.conditions, $scope.inquiryType.type);
+    };
+
     $scope.inquiryTypes = model.inquiryTypes;
     if(globals.inquiryToLoad) {
         loadInquiry(globals.inquiryToLoad);
@@ -109,54 +157,6 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, glo
     /**
      * Saving & loading
      */
-
-    var wakeUp = function(list, dataType) {
-        if(!list || !list.length) return;
-        for(var i = 0; i < list.length; i++) {
-            var curr = list[i];
-            curr.container = list;
-            curr.text = $sce.trustAsHtml(describeCondition(curr, dataType));
-            if(curr.kind == 'relation')
-                wakeUp(curr.subs, curr.target);
-        }
-    };
-
-    var hibernate = function(list) {
-        if(!list || !list.length) return;
-        for(var i = 0; i < list.length; i++) {
-            var curr = list[i];
-            delete curr.container;
-            delete curr.text;
-            if(curr.subs) hibernate(curr.subs);
-        }
-    };
-
-    var loadInquiry = function(v) {
-        if(!globals.inquiryToLoad) return;
-
-        var inq = globals.inquiryToLoad.value;
-        wakeUp(inq.conditions, inq.type.type);
-
-        $scope.conditions = inq.conditions;
-        $scope.inquiryType = inq.type;
-        $scope.groupFields = inq.group;
-
-        globals.inquiryToLoad = false;
-    };
-
-    var saveInquiry = function() {
-        hibernate($scope.conditions);
-        globals.saveInquiry({
-            caption: $scope.saveInfo.name,
-            date: new Date(),
-            value: {
-                conditions: $scope.conditions,
-                type: $scope.inquiryType,
-                group: $scope.groupFields
-            }
-        });
-        wakeUp($scope.conditions, $scope.inquiryType.type);
-    };
 
     $scope.saveInfo = { name: '' };
 

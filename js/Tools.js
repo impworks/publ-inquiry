@@ -79,7 +79,7 @@ angular.module('inquiry').service(
         this.Remove = function(arr, item) {
             if(!arr || !arr.length || typeof item === 'undefined') return;
             var idx = arr.indexOf(item);
-            if(idx != -1) return;
+            if(idx == -1) return;
             arr.splice(idx, 1);
         };
 
@@ -120,6 +120,18 @@ angular.module('inquiry').service(
             if(attrs) attrs = ' ' + attrs;
             else attrs = '';
             return $sce.trustAsHtml('<' + tag + attrs + '>' + self.HtmlEncode(str) + '</' + tag + '>');
+        };
+
+        this.DateFormat = function(d) {
+            var now = new Date();
+            var dist = Math.round((now.getTime() - d.getTime()) / 1000);
+            if(dist < 10) return 'Just now';
+            if(dist < 60) return 'A minute ago';
+            if(dist < 3600) return Math.round(dist / 60) + ' minute(s) ago';
+            if(dist < 3600 * 24) return Math.round(dist / 3600) + ' hour(s) ago';
+            if(dist < 3600 * 48) return 'Yesterday';
+            if(dist < 3600 * 24 * 7) return Math.round(dist / 3600 / 24) + ' day(s) ago';
+            return d.format('yyyy/MM/dd');
         };
     }
 );
