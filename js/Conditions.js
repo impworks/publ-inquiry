@@ -12,7 +12,7 @@ var ConditionsCtrl = function ($scope, $modalInstance, model, tools, focus, data
 
     var typeEquals = function(type, value) {
         if(type == value) return true;
-        if(value == 'basic' && ['date'].indexOf($scope.field.type) == -1) return true;
+        if(value == 'basic' && ['date', 'enum'].indexOf($scope.field.type) == -1) return true;
         return false;
     };
 
@@ -67,6 +67,11 @@ var ConditionsCtrl = function ($scope, $modalInstance, model, tools, focus, data
 
     $scope.showDetails = function () {
         return !!$scope.field;
+    };
+
+    $scope.getEnumValues = function () {
+        if(!$scope.field || $scope.field.type != 'enum') return [];
+        return model.enums[$scope.field.enum];
     };
 
     $scope.canSave = function() {

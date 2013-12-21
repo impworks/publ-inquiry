@@ -91,6 +91,15 @@ ul.navbar-nav li
     top: 2px;
 }
 
+.bootstrap-select:focus
+{
+    outline: none;
+}
+.bootstrap-select li
+{
+    outline: none;
+}
+
 /* Dialog fixes */
 .modal {
     display: block;

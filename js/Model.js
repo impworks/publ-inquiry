@@ -44,30 +44,30 @@ angular.module('inquiry').factory('model',
                 books: [
                     { id: 'name', type: 'string', caption: 'Name' },
                     { id: 'descr', type: 'string', caption: 'Description' },
-                    { id: 'access-type', type: 'string', caption: 'Access type' },
-                    { id: 'state', type: 'string', caption: 'State' },
+                    { id: 'access-type', type: 'enum', enum: 'bookSharing', caption: 'Access type' },
+                    { id: 'state', type: 'enum', enum: 'bookStatus', caption: 'State' },
                     { id: 'size', type: 'size', caption: 'Size' },
                     { id: 'pages', type: 'int', caption: 'Pages count' },
                     { id: 'views', type: 'int', caption: 'Views count' },
                     { id: 'bandwidth', type: 'size', caption: 'Total bandwidth' },
-                    { id: 'creation-year', type: 'int', caption: 'Creation year' },
+                    { id: 'creation-year', type: 'enum', enum: 'year', caption: 'Creation year' },
                     { id: 'creation-date', type: 'date', caption: 'Creation date' },
-                    { id: 'edit-year', type: 'int', caption: 'Last edit year' },
+                    { id: 'edit-year', type: 'enum', enum: 'year', caption: 'Last edit year' },
                     { id: 'edit-date', type: 'date', caption: 'Last edit date' },
                     { id: 'update-count', type: 'int', caption: 'Updates count' }
                 ],
                 series: [
                     { id: 'name', type: 'string', caption: 'Name' },
-                    { id: 'creation-year', type: 'int', caption: 'Creation year' },
+                    { id: 'creation-year', type: 'enum', enum: 'year', caption: 'Creation year' },
                     { id: 'creation-date', type: 'date', caption: 'Creation date' },
-                    { id: 'edit-year', type: 'int', caption: 'Last edit year' },
+                    { id: 'edit-year', type: 'enum', enum: 'year', caption: 'Last edit year' },
                     { id: 'edit-date', type: 'date', caption: 'Last edit date' },
-                    { id: 'sharing', type: 'string', caption: 'Sharing mode' }
+                    { id: 'sharing', type: 'enum', caption: 'Sharing mode' }
                 ],
                 users: [
                     { id: 'name', type: 'string', caption: 'Name' },
                     { id: 'urlname', type: 'string', caption: 'URL Name' },
-                    { id: 'reg-year', type: 'int', caption: 'Registration year' },
+                    { id: 'reg-year', type: 'enum', enum: 'year', caption: 'Registration year' },
                     { id: 'reg-date', type: 'date', caption: 'Registration date' },
                     { id: 'last-act', type: 'date', caption: 'Last activity' },
                     { id: 'pay-exp', type: 'date', caption: 'Payment expiration' },
@@ -114,8 +114,9 @@ angular.module('inquiry').factory('model',
 
             enums: {
                 seriesSharing: [ 'Public', 'Subscribed' ],
-                bookAccessType: [ 'Password', 'Public', 'Private' ],
-                bookStatus: [ 'Active', 'Trashed' ]
+                bookSharing: [ 'Password', 'Public', 'Private' ],
+                bookStatus: [ 'Active', 'Trashed' ],
+                year: [ '2011', '2012', '2013', '2014' ]
             }
         };
     }
