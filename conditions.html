@@ -53,6 +53,9 @@
                             <div class="col-sm-4" ng-show="inputType('basic')">
                                 <input class="form-control" type="text" ng-model="value.value" focus-on="basic-1" />
                             </div>
+                            <div class="col-sm-4" ng-show="inputType('date')">
+                                <input class="form-control" type="text" ng-model="value.value" bs-datepicker data-date-format="yyyy/mm/dd" focus-on="date-1" />
+                            </div>
                             <div class="col-sm-4" ng-show="inputType('enum')">
                                 <select class="form-control" ng-model="value.value" ng-options="v for v in getEnumValues()" bs-select>
                                 </select>
