@@ -1,10 +1,14 @@
 var ConditionsCtrl = function ($scope, $modalInstance, model, tools, focus, dataType) {
 
+    var getType = function () {
+        return $scope.field ? $scope.field.type : 'int';
+    };
+
     var validateCondition = function(value) {
-        if(!$scope.field)
+        if(!$scope.field && !$scope.relation)
             return false;
 
-        var type = $scope.field.type;
+        var type = getType();
         if(type == 'int') return !isNaN(value);
         if(type == 'size') return tools.ParseSize(value) > 0;
         return !!value;
@@ -12,25 +16,19 @@ var ConditionsCtrl = function ($scope, $modalInstance, model, tools, focus, data
 
     var typeEquals = function(type, value) {
         if(type == value) return true;
-        if(value == 'basic' && ['date', 'enum'].indexOf($scope.field.type) == -1) return true;
+        if(value == 'basic' && ['date', 'enum'].indexOf(getType()) == -1) return true;
         return false;
     };
 
     var updateFocus = function () {
-        var key = $scope.field.type == 'date' ? 'date' : 'basic' + '-' + $scope.operator.inputs;
+        var type = getType();
+        var key = type == 'date' ? 'date' : 'basic' + '-' + $scope.operator.inputs;
         focus(key);
     };
 
-    $scope.caption = tools.Cap(dataType) + ' conditions';
-    $scope.condFields = tools.Split(model.fields[dataType], 3);
-    $scope.condRelations = tools.Split(model.relations[dataType], 3);
-    $scope.field = false;
-    $scope.value = {};
-
-    $scope.selectField = function(v) {
-        $scope.field = v;
+    var setOperators = function(type) {
         $scope.operators = tools.SelectMany(
-            model.operators[v.type],
+            model.operators[type],
             function(v) {
                 return [
                     { id: v.id, caption: v.caption, inputs: v.inputs },
@@ -38,18 +36,40 @@ var ConditionsCtrl = function ($scope, $modalInstance, model, tools, focus, data
                 ];
             }
         );
+
         $scope.operator = $scope.operators[0];
         updateFocus();
     };
 
+    $scope.caption = tools.Cap(dataType) + ' conditions';
+    $scope.condFields = tools.Split(model.fields[dataType], 3);
+    $scope.condRelations = tools.Split(model.relations[dataType], 3);
+    $scope.field = false;
+    $scope.relation = false;
+    $scope.value = {};
+
+    $scope.unselect = function () {
+        $scope.field = $scope.relation = false;
+    };
+
+    $scope.selectField = function(v) {
+        $scope.field = v;
+        setOperators(v.type);
+    };
+
     $scope.selectRelation = function(v) {
-        $modalInstance.close({
-            kind: 'relation',
-            rel: v.rel,
-            id: v.id,
-            target: v.target,
-            subs: []
-        })
+        if(v.rel == 'many') {
+            $scope.relation = v;
+            setOperators('int');
+        } else {
+            $modalInstance.close({
+                kind: 'relation',
+                rel: v.rel,
+                id: v.id,
+                target: v.target,
+                subs: []
+            });
+        }
     };
 
     $scope.setOperator = function(v) {
@@ -62,11 +82,13 @@ var ConditionsCtrl = function ($scope, $modalInstance, model, tools, focus, data
     };
 
     $scope.inputType = function(v) {
-        return $scope.field && typeEquals($scope.field.type, v);
+        if(!$scope.field && !$scope.relation) return undefined;
+        var type = getType();
+        return typeEquals(type, v);
     };
 
     $scope.showDetails = function () {
-        return !!$scope.field;
+        return !!$scope.field || !!$scope.relation;
     };
 
     $scope.getEnumValues = function () {
@@ -74,20 +96,41 @@ var ConditionsCtrl = function ($scope, $modalInstance, model, tools, focus, data
         return model.enums[$scope.field.enum];
     };
 
+    $scope.getCaption = function () {
+        if(!$scope.field && !$scope.relation)
+            return '';
+
+        return $scope.field
+            ? $scope.field.caption
+            : 'The number of ' + tools.Cap($scope.relation.caption, false);
+    };
+
     $scope.canSave = function() {
-        if(!$scope.field) return false;
+        if(!$scope.field && !$scope.relation) return false;
         if($scope.operator.inputs == 0) return true;
         if($scope.operator.inputs == 1) return validateCondition($scope.value.value);
         return validateCondition($scope.value.from) && validateCondition($scope.value.to);
     };
 
-    $scope.saveField = function() {
-        $modalInstance.close({
-            kind: 'field',
-            id: $scope.field.id,
-            operator: $scope.operator.id,
-            value: $scope.value
-        });
+    $scope.save = function() {
+        var res = $scope.field
+            ? {
+                kind: 'field',
+                id: $scope.field.id,
+                operator: $scope.operator.id,
+                value: $scope.value
+              }
+            : {
+                kind: 'relation',
+                rel: $scope.relation.rel,
+                id: $scope.relation.id,
+                target: $scope.relation.target,
+                operator: $scope.operator.id,
+                value: $scope.value,
+                subs: []
+              };
+
+        $modalInstance.close(res);
     };
 
     $scope.dismiss = function() {

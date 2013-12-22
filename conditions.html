@@ -36,7 +36,7 @@
                             <label class="control-label col-sm-3">Condition</label>
                             <div class="col-sm-9">
                                 <div class="form-control-static">
-                                    {{field.caption}}
+                                    {{getCaption()}}
                                     <div class="dropdown inline form-control-static">
                                         <a data-toggle="dropdown" href="" class="dropdown-toggle inner-link">{{operator.caption}}</a>
                                         <ul class="dropdown-menu" role="menu">
@@ -75,11 +75,11 @@
                 </div>
             </div>
             <div ng-show="showDetails()" class="modal-footer">
-                <button type="button" class="btn btn-default pull-left" ng-click="selectField(false)">
+                <button type="button" class="btn btn-default pull-left" ng-click="unselect()">
                     <span class="glyphicon glyphicon-chevron-left"></span> Back
                 </button>
                 <button type="button" class="btn btn-default" ng-click="dismiss()">Cancel</button>
-                <button type="submit" class="btn btn-primary" ng-click="saveField()" ng-disabled="!canSave()">Add</button>
+                <button type="submit" class="btn btn-primary" ng-click="save()" ng-disabled="!canSave()">Add</button>
             </div>
         </form>
     </div>

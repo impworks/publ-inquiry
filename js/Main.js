@@ -8,6 +8,14 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, glo
 
     var describeCondition = function(v, dataType) {
         dataType = dataType || $scope.inquiryType.type;
+
+        var getValue = function(kind, mustQuote) {
+            var res = v.value[kind];
+            if(mustQuote) res = '"' + res + '"';
+            return tools.Wrap(res, 'tt');
+        };
+        var op, rep;
+
         if(v.kind == 'relation') {
             var rel = tools.First(
                 model.relations[dataType],
@@ -15,9 +23,19 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, glo
             );
 
             var cap = tools.Cap(rel.caption, false);
-            return rel.rel == 'one'
-                ? 'Restriction on ' + tools.Wrap(cap, 'strong') + ':'
-                : 'There are ' + tools.Wrap('N', 'tt') + ' items of ' + tools.Wrap(cap, 'strong');
+            if(rel.rel == 'one')
+                return 'Restriction on ' + tools.Wrap(cap, 'strong') + ':';
+
+            op = tools.First(
+                model.operators['int'],
+                function(x) { return v.operator == x.id; }
+            );
+
+            rep = 'The number of ' + tools.Wrap(cap, 'strong') + ' ' + (isNeg ? op.negCaption : op.caption) + (op.inputs ? ': ' : '');
+            if(op.inputs == 1)
+                rep += getValue('value');
+            else if(op.inputs == 2)
+                rep += getValue('from') + ' and ' + getValue('to');
         } else {
             var isNeg = v.operator.substr(0, 4) == 'not-';
             if (isNeg) v.operator = v.operator.substr(4);
@@ -27,25 +45,20 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, glo
                 function(x) { return v.id == x.id }
             );
 
-            var op = tools.First(
+            op = tools.First(
                 model.operators[fld.type],
                 function(x) { return v.operator == x.id; }
             );
 
-            var getValue = function(kind) {
-                var res = v.value[kind];
-                if(fld.type == 'string') res = '"' + res + '"';
-                return tools.Wrap(res, 'tt');
-            };
-
-            var rep = tools.Wrap(fld.caption, 'strong') + ' ' + (isNeg ? op.negCaption : op.caption) + (op.inputs ? ': ' : '');
+            var quote = fld.type == 'string';
+            rep = tools.Wrap(fld.caption, 'strong') + ' ' + (isNeg ? op.negCaption : op.caption) + (op.inputs ? ': ' : '');
             if(op.inputs == 1)
-                rep += getValue('value');
+                rep += getValue('value', quote);
             else if(op.inputs == 2)
-                rep += getValue('from') + ' and ' + getValue('to');
-
-            return rep;
+                rep += getValue('from', quote) + ' and ' + getValue('to', quote);
         }
+
+        return rep;
     };
 
     var wakeUp = function(list, dataType) {
