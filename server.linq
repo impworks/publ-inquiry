@@ -45,6 +45,7 @@ public static class Tests
 
 public class InquiryBuilder
 {
+	#region Lookups
 	// Replace rules:
 	// %c = column
 	// %v = value
@@ -120,23 +121,75 @@ public class InquiryBuilder
 			}
 		}
 	};
+	#endregion
 	
 	public string GetQuery(InquiryRequest req)
 	{
-		return null;
+		var conditions = new List<string>();
+		var joins = new List<Tuple<string, string>>();
+		var groups = new List<string>();
+		
+		var table = Lookup(req.InquiryType, RelationMappings);
+		
+		return BuildQuery(table, conditions, joins, groups);
 	}
 	
-	public bool IsMultiRelation(string id)
+	private string BuildQuery(string table, ICollection<string> conditions, ICollection<Tuple<string, string>> joins, ICollection<string> groups)
+	{
+		var sb = new StringBuilder();
+		var fields = groups.Concat(new [] { "COUNT(*)" });
+		sb.AppendFormat(
+			"SELECT {0} FROM {1}", 
+			string.Join(", ", fields),
+			table
+		);
+		
+		foreach(var curr in joins)
+			sb.AppendFormat(
+				" LEFT JOIN {0} ON {1}",
+				curr.Item1,
+				curr.Item2
+			);
+			
+		if(conditions.Count > 0)
+		{
+			sb.Append(" WHERE ");
+			AppendTo(sb, conditions, " AND ");
+		}
+		
+		if(groups.Count > 0)
+		{
+			sb.Append(" GROUP BY ");
+			AppendTo(sb, groups, ", ");
+		}
+		
+		return sb.ToString();
+	}
+	
+	private bool IsMultiRelation(string id)
 	{
 		return new [] { "book-series", "users-books", "users-series", "series-books" }.Contains(id);
 	}
 	
-	public string GetValue(string key, Dictionary<string, string> lookup)
+	private string Lookup(string key, Dictionary<string, string> lookup)
 	{
 		string result;
 		if(!lookup.TryGetValue(key, out result))
 			throw new ArgumentException(string.Format("Invalid key: {0}", key));
 			
 		return result;
+	}
+	
+	private void AppendTo(StringBuilder sb, IEnumerable<string> data, string delim)
+	{
+		bool first = true;
+		foreach(var curr in data)
+		{
+			if(first)
+				first = false;
+			else
+				sb.Append(delim);
+			sb.Append(curr);
+		}
 	}
 }
