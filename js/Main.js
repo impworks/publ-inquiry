@@ -1,4 +1,4 @@
-var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, globals, model, tools) {
+var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, globals, model, tools, endpoint) {
 
     // check auth
     if(!globals.token) {
@@ -82,6 +82,12 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, glo
         }
     };
 
+    var withHibernated = function(fx) {
+        hibernate($scope.conditions);
+        fx();
+        wakeUp($scope.conditions, $scope.inquiryType.type);
+    };
+
     var loadInquiry = function(v) {
         if(!globals.inquiryToLoad) return;
 
@@ -96,17 +102,17 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, glo
     };
 
     var saveInquiry = function() {
-        hibernate($scope.conditions);
-        globals.saveInquiry({
-            caption: $scope.saveInfo.name,
-            date: new Date(),
-            value: {
-                conditions: $scope.conditions,
-                type: $scope.inquiryType,
-                group: $scope.groupFields
-            }
+        withHibernated(function() {
+            globals.saveInquiry({
+                caption: $scope.saveInfo.name,
+                date: new Date(),
+                value: {
+                    conditions: $scope.conditions,
+                    type: $scope.inquiryType,
+                    group: $scope.groupFields
+                }
+            });
         });
-        wakeUp($scope.conditions, $scope.inquiryType.type);
     };
 
     $scope.inquiryTypes = model.inquiryTypes;
@@ -185,5 +191,64 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, glo
 
         $('.popover.in').popover('hide');
         $rootScope.$broadcast('saved-increment');
+    };
+
+    /**
+     * Send & receive to server
+     */
+
+    var getConditionsForRequest = function () {
+        var process = function(src, target) {
+            for(var i = 0; i < src.length; i++) {
+                var curr = src[i];
+                var cond = {
+                    kind: curr.kind,
+                    id: curr.id,
+                    operator: curr.operator,
+                    value: curr.value.value,
+                    from: curr.value.from,
+                    to: curr.value.to
+                };
+
+                if(curr.kind == 'relation' && curr.subs && curr.subs.length) {
+                    cond.subs = [];
+                    process(curr.subs, cond.subs);
+                }
+
+                target.push(curr);
+            }
+        };
+
+        var conditions = [];
+        process($scope.conditions, conditions);
+        return conditions;
+    };
+
+    var getRequest = function () {
+        var groups = tools.Where(
+            $scope.groupFields,
+            function (x) { return !!x.selected; }
+        );
+
+        return {
+            Token: globals.token,
+            InquiryType: $scope.inquiryType.type,
+            Groups: groups,
+            Conditions: getConditionsForRequest()
+        };
+    };
+
+    $scope.inquire = function () {
+        withHibernated(function() {
+            $http.post(endpoint.publ + '/GetInquiryResult', getRequest())
+                .success(function(v) {
+                    // todo
+                    alert('cool');
+                })
+                .error(function() {
+                    // todo
+                    alert('wtf!');
+                });
+        });
     };
 };
