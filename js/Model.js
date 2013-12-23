@@ -66,7 +66,7 @@ angular.module('inquiry').factory('model',
                 ],
                 users: [
                     { id: 'name', type: 'string', caption: 'Name' },
-                    { id: 'urlname', type: 'string', caption: 'URL Name' },
+                    { id: 'url-name', type: 'string', caption: 'URL Name' },
                     { id: 'reg-year', type: 'enum', enum: 'year', caption: 'Registration year' },
                     { id: 'reg-date', type: 'date', caption: 'Registration date' },
                     { id: 'last-act', type: 'date', caption: 'Last activity' },
@@ -107,8 +107,8 @@ angular.module('inquiry').factory('model',
                 ],
 
                 enum: [
-                    { id: 'equals', caption: 'equals value', negCaption: 'differs from value', inputs: 1 },
-                    { id: 'inside', caption: 'is in list', negCaption: 'is not in list', inputs: 1 }
+                    { id: 'equals', caption: 'equals value', negCaption: 'differs from value', inputs: 1 }
+                    // { id: 'inside', caption: 'is in list', negCaption: 'is not in list', inputs: 1 }
                 ]
             },
 
