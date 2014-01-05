@@ -14,8 +14,8 @@ public class InquiryRequest
 
 public class InquiryCondition
 {
+	public string Id;
 	public string Kind;
-	public string Field;
 	public string Operator;
 	public string Value;
 	public string From;
@@ -45,7 +45,56 @@ public static class Tests
 
 public class InquiryBuilder
 {
+	#region Subclasses
+	
+	private class Relation
+	{
+		public readonly string Table;
+		public readonly string PrimaryKey;
+		public readonly string ForeignKey;
+		
+		public Relation(string table, string pk, string fk)
+		{
+			Table = table;
+			PrimaryKey = pk;
+			ForeignKey = fk;
+		}
+	}
+	
+	private class Join
+	{
+		public string Table;
+		public string Alias;
+		public string Condition;
+		
+		public Join(string table, string cond)
+		{
+			Table = table;
+			Alias = InquiryBuilder.GetAlias(table);
+			Condition = cond;
+		}
+	}
+	
+	private class InquiryData
+	{
+		public string Table;
+		public string Alias;
+		
+		public readonly List<string> Conditions = new List<string>();
+		public readonly List<Join> Joins = new List<Join>();
+		public readonly List<string> Groups = new List<string>();
+		
+		public InquiryData(string table)
+		{
+			Table = table;
+			Alias = InquiryBuilder.GetAlias(table);
+		}
+	}
+	
+	#endregion
+
 	#region Lookups
+	
 	// Replace rules:
 	// %c = column
 	// %v = value
@@ -65,11 +114,17 @@ public class InquiryBuilder
 		{ "not-between", "%с NOT BETWEEN %f AND %t" },
 	};
 	
-	private Dictionary<string, string> RelationMappings = new Dictionary<string, string>
+	private Dictionary<string, string> InquiryMappings = new Dictionary<string, string>
 	{
 		{ "books", "content_profile" },
 		{ "users", "users" },
 		{ "series", "series" }
+	};
+	
+	private Dictionary<string, Relation> RelationMappings = new Dictionary<string, Relation>
+	{
+		{ "book-owner", new Relation("users", "id", "author_id") },
+		{ "book-creator", new Relation("users", "id", "creator_id") }
 	};
 	
 	private Dictionary<string, Dictionary<string, string>> FieldMappings = new Dictionary<string, Dictionary<string, string>>
@@ -125,42 +180,41 @@ public class InquiryBuilder
 	
 	public string GetQuery(InquiryRequest req)
 	{
-		var conditions = new List<string>();
-		var joins = new List<Tuple<string, string>>();
-		var groups = new List<string>();
+		var table = Lookup(req.InquiryType, InquiryMappings);
+		var data = new InquiryData(table);
 		
-		var table = Lookup(req.InquiryType, RelationMappings);
-		
-		return BuildQuery(table, conditions, joins, groups);
+		return BuildQuery(data);
 	}
 	
-	private string BuildQuery(string table, ICollection<string> conditions, ICollection<Tuple<string, string>> joins, ICollection<string> groups)
+	private string BuildQuery(InquiryData data)
 	{
 		var sb = new StringBuilder();
-		var fields = groups.Concat(new [] { "COUNT(*)" });
+		var fields = data.Groups.Concat(new [] { "COUNT(*)" });
 		sb.AppendFormat(
-			"SELECT {0} FROM {1}", 
+			"SELECT {0} FROM {1} AS {2}", 
 			string.Join(", ", fields),
-			table
+			data.Table,
+			data.Alias
 		);
 		
-		foreach(var curr in joins)
+		foreach(var curr in data.Joins)
 			sb.AppendFormat(
-				" LEFT JOIN {0} ON {1}",
-				curr.Item1,
-				curr.Item2
+				" LEFT JOIN {0} AS {1} ON {2}",
+				curr.Table,
+				curr.Alias,
+				curr.Condition
 			);
 			
-		if(conditions.Count > 0)
+		if(data.Conditions.Count > 0)
 		{
 			sb.Append(" WHERE ");
-			AppendTo(sb, conditions, " AND ");
+			AppendTo(sb, data.Conditions, " AND ");
 		}
 		
-		if(groups.Count > 0)
+		if(data.Groups.Count > 0)
 		{
 			sb.Append(" GROUP BY ");
-			AppendTo(sb, groups, ", ");
+			AppendTo(sb, data.Groups, ", ");
 		}
 		
 		return sb.ToString();
@@ -191,5 +245,13 @@ public class InquiryBuilder
 				sb.Append(delim);
 			sb.Append(curr);
 		}
+	}	
+	
+	private static int AliasId;
+	public static string GetAlias(string table)
+	{
+		var alias = table[0] + AliasId.ToString();
+		AliasId++;
+		return alias;
 	}
 }
