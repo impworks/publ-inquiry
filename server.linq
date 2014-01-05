@@ -67,10 +67,10 @@ public class InquiryBuilder
 		public string Alias;
 		public string Condition;
 		
-		public Join(string table, string cond)
+		public Join(string table, string alias, string cond)
 		{
 			Table = table;
-			Alias = InquiryBuilder.GetAlias(table);
+			Alias = alias;
 			Condition = cond;
 		}
 	}
@@ -124,7 +124,8 @@ public class InquiryBuilder
 	private Dictionary<string, Relation> RelationMappings = new Dictionary<string, Relation>
 	{
 		{ "book-owner", new Relation("users", "id", "author_id") },
-		{ "book-creator", new Relation("users", "id", "creator_id") }
+		{ "book-creator", new Relation("users", "id", "creator_id") },
+		{ "series-owner", new Relation("users", "id", "?") },
 	};
 	
 	private Dictionary<string, Dictionary<string, string>> FieldMappings = new Dictionary<string, Dictionary<string, string>>
@@ -183,7 +184,55 @@ public class InquiryBuilder
 		var table = Lookup(req.InquiryType, InquiryMappings);
 		var data = new InquiryData(table);
 		
+		ProcessConditions(req.Conditions, data, data.Alias);
+		
 		return BuildQuery(data);
+	}
+	
+	private void ProcessConditions(IEnumerable<InquiryCondition> conds, InquiryData data, string alias)
+	{
+		foreach(var cond in conds)
+		{
+			if(cond.Kind == "field")
+			{
+				data.Conditions.Add(ProcessExpression(cond, data.Table, alias));
+			}
+			else
+			{
+				if(IsMultiRelation(cond.Id))
+					throw new NotImplementedException("TODO");
+					
+				var rel = Lookup(cond.Id, RelationMappings);
+				var newAlias = GetAlias(rel.Table);
+				var condition = string.Format(
+					"{0}.{1} = {1}.{2}",
+					alias,
+					rel.ForeignKey,
+					newAlias,
+					rel.PrimaryKey
+				);
+				
+				data.Joins.Add(new Join(rel.Table, newAlias, condition));
+				
+				ProcessConditions(cond.Subs, data, newAlias);
+			}
+		}
+	}
+	
+	private string ProcessExpression(InquiryCondition cond, string type, string alias)
+	{
+		var name = string.Format(
+			"{0}.{1}",
+			alias,
+			Lookup(cond.Id, FieldMappings[type])
+		);
+		
+		var op = Lookup(cond.Operator, OperatorMappings);
+		
+		return op.Replace("%c", name)
+				 .Replace("%v", cond.Value ?? "")
+				 .Replace("%f", cond.From ?? "")
+				 .Replace("%t", cond.To ?? "");
 	}
 	
 	private string BuildQuery(InquiryData data)
@@ -225,9 +274,9 @@ public class InquiryBuilder
 		return new [] { "book-series", "users-books", "users-series", "series-books" }.Contains(id);
 	}
 	
-	private string Lookup(string key, Dictionary<string, string> lookup)
+	private T Lookup<T>(string key, Dictionary<string, T> lookup)
 	{
-		string result;
+		T result;
 		if(!lookup.TryGetValue(key, out result))
 			throw new ArgumentException(string.Format("Invalid key: {0}", key));
 			
