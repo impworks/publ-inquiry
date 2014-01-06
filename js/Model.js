@@ -11,7 +11,7 @@ angular.module('inquiry').factory('model',
                 books: [
                     { type: 'access-type', name: 'Access type' },
                     { type: 'state', name: 'State' },
-                    { type: 'year', name: 'Year' }
+                    { type: 'creation-year', name: 'Year' }
                 ],
                 users: [
                     { type: 'state', name: 'State' },
@@ -20,7 +20,7 @@ angular.module('inquiry').factory('model',
                     { type: 'exp-year', name: 'Expiration year' }
                 ],
                 series: [
-                    { type: 'year', name: 'Year' }
+                    { type: 'creation-year', name: 'Year' }
                 ]
             },
 
