@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace PublInquiryServer
@@ -71,24 +72,24 @@ namespace PublInquiryServer
 		#region Lookups
 
 		// Replace rules:
-		// %n = column
-		// %v = value
-		// %f = from
-		// %t = to
+		// {0} = column
+		// {1} = value
+		// {2} = from
+		// {3} = to
 		private static readonly Dictionary<string, string> OperatorMappings = new Dictionary<string, string>
 		{
-			{ "equals", "%n = %v" },
-			{ "not-equals", "%n <> %v" },
-			{ "null", "%n IS NULL" },
-			{ "not-null", "%n IS NOT NULL" },
-			{ "true", "%n = true" },
-			{ "not-true", "%n = false" },
-			{ "greater", "%n > %v" },
-			{ "not-greater", "%n < %v" },
-			{ "contains", "%n LIKE '%%v%'" },
-			{ "not-contains", "%n NOT LIKE '%%v%'" },
-			{ "between", "%n BETWEEN %f AND %t" },
-			{ "not-between", "%n NOT BETWEEN %f AND %t" },
+			{ "equals", "{0} = {1}" },
+			{ "not-equals", "{0} <> {1}" },
+			{ "null", "{0} IS NULL" },
+			{ "not-null", "{0} IS NOT NULL" },
+			{ "true", "{0} = true" },
+			{ "not-true", "{0} = false" },
+			{ "greater", "{0} > {1}" },
+			{ "not-greater", "{0} < {1}" },
+			{ "contains", "{0} LIKE '%{1}%'" },
+			{ "not-contains", "{0} NOT LIKE '%{1}%'" },
+			{ "between", "{0} BETWEEN {2} AND {3}" },
+			{ "not-between", "{0} NOT BETWEEN {2} AND {3}" },
 		};
 
 		private static readonly Dictionary<string, string> InquiryMappings = new Dictionary<string, string>
@@ -171,6 +172,9 @@ namespace PublInquiryServer
 
 		private static void ProcessGroups(IEnumerable<string> groups, InquiryData data, string alias)
 		{
+			if (groups == null)
+				return;
+
 			foreach (var group in groups)
 			{
 				var col = group.Replace("-", "_");
@@ -179,7 +183,7 @@ namespace PublInquiryServer
 				data.Columns.Add(
 					new Column(
 						Lookup(group, FieldMappings[data.Type]).Replace("%a", alias),
-						col
+						group
 					)
 				);
 			}
@@ -216,31 +220,33 @@ namespace PublInquiryServer
 				var subData = new InquiryData(rel.Target);
 				ProcessConditions(cond.Subs, subData, subData.Alias);
 				subData.Conditions.Add(GetKeyBinding(rel, alias, subData.Alias));
-				subData.Columns.Add(new Column(rel.PrimaryKey, subData.Alias));
-				subData.Groups.Add(rel.PrimaryKey);
+
+				var col = rel.PrimaryKey.Replace("-", "_");
+				subData.Columns.Add(new Column(rel.PrimaryKey, col));
+				subData.Groups.Add(col);
 
 				var expr = BuildQuery(subData);
 				var condition = GetKeyBinding(rel, alias, newAlias);
 				data.Joins.Add(new Join("(" + expr + ")", newAlias, condition));
 
-				data.Conditions.Add(ProcessExpressionBase(cond, "count", newAlias));
+				data.Conditions.Add(ProcessExpressionBase(cond, newAlias + ".count"));
 			}
 		}
 
 		private static string ProcessExpression(InquiryCondition cond, string type, string alias)
 		{
 			var name = Lookup(cond.Id, FieldMappings[type]).Replace("%a", alias);
-			return ProcessExpressionBase(cond, name, alias);
+			return ProcessExpressionBase(cond, name);
 		}
 
-		private static string ProcessExpressionBase(InquiryCondition cond, string field, string alias)
+		private static string ProcessExpressionBase(InquiryCondition cond, string field)
 		{
 			var op = Lookup(cond.Operator, OperatorMappings);
 
-			return op.Replace("%n", field)
-					 .Replace("%v", cond.Value ?? "")
-					 .Replace("%f", cond.From ?? "")
-					 .Replace("%t", cond.To ?? "");
+			if (cond.Operator.EndsWith("contains"))
+				cond.Value = cond.Value.Replace("%", "%%");
+
+			return string.Format(op, field, cond.Value ?? "", cond.From ?? "", cond.To ?? "");
 		}
 
 		private static string GetKeyBinding(Relation rel, string alias, string newAlias)
@@ -286,7 +292,8 @@ namespace PublInquiryServer
 			if (data.Groups.Count > 0)
 			{
 				sb.Append(" GROUP BY ");
-				AppendTo(sb, data.Groups, ", ");
+				var groups = from g in data.Groups select string.Format("{0}.{1}", data.Alias, g);
+				AppendTo(sb, groups, ", ");
 			}
 
 			return sb.ToString();
@@ -294,7 +301,7 @@ namespace PublInquiryServer
 
 		private static bool IsMultiRelation(string id)
 		{
-			return new[] { "users-books", "users-series" }.Contains(id);
+			return new[] { "user-books", "user-series" }.Contains(id);
 		}
 
 		private static T Lookup<T>(string key, IReadOnlyDictionary<string, T> lookup)
