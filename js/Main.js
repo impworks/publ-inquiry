@@ -1,4 +1,4 @@
-var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, globals, model, tools, endpoint) {
+var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, globals, model, tools, endpoints) {
 
     // check auth
     if(!globals.token) {

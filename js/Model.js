@@ -28,7 +28,7 @@ angular.module('inquiry').factory('model',
                 books: [
                     { id: 'book-owner', rel: 'one', target: 'users', caption: 'Book owner' },
                     { id: 'book-creator', rel: 'one', target: 'users', caption: 'Book creator' },
-                    { id: 'book-series', rel: 'many', target: 'series', caption: 'Containing series' }
+//                    { id: 'book-series', rel: 'many', target: 'series', caption: 'Containing series' }
                 ],
                 users: [
                     { id: 'user-books', rel: 'many', target: 'books', caption: 'Books' },
@@ -36,7 +36,7 @@ angular.module('inquiry').factory('model',
                 ],
                 series: [
                     { id: 'series-owner', rel: 'one', target: 'users', caption: 'Series owner' },
-                    { id: 'series-books', rel: 'many', target: 'books', caption: 'Books' }
+//                    { id: 'series-books', rel: 'many', target: 'books', caption: 'Books' }
                 ]
             },
 

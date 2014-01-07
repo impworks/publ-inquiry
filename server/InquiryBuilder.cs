@@ -11,13 +11,13 @@ namespace PublInquiryServer
 
 		private class Relation
 		{
-			public readonly string Table;
+			public readonly string Target;
 			public readonly string PrimaryKey;
 			public readonly string ForeignKey;
 
-			public Relation(string table, string pk, string fk)
+			public Relation(string target, string pk, string fk)
 			{
-				Table = table;
+				Target = target;
 				PrimaryKey = pk;
 				ForeignKey = fk;
 			}
@@ -75,7 +75,7 @@ namespace PublInquiryServer
 		// %v = value
 		// %f = from
 		// %t = to
-		private Dictionary<string, string> OperatorMappings = new Dictionary<string, string>
+		private static readonly Dictionary<string, string> OperatorMappings = new Dictionary<string, string>
 		{
 			{ "equals", "%n = %v" },
 			{ "not-equals", "%n <> %v" },
@@ -91,21 +91,23 @@ namespace PublInquiryServer
 			{ "not-between", "%n NOT BETWEEN %f AND %t" },
 		};
 
-		private Dictionary<string, string> InquiryMappings = new Dictionary<string, string>
+		private static readonly Dictionary<string, string> InquiryMappings = new Dictionary<string, string>
 		{
 			{ "books", "content_profile" },
 			{ "users", "users" },
 			{ "series", "series" }
 		};
 
-		private Dictionary<string, Relation> RelationMappings = new Dictionary<string, Relation>
+		private static readonly Dictionary<string, Relation> RelationMappings = new Dictionary<string, Relation>
 		{
 			{ "book-owner", new Relation("users", "id", "author_id") },
 			{ "book-creator", new Relation("users", "id", "creator_id") },
 			{ "series-owner", new Relation("users", "id", "?") },
+			{ "user-books", new Relation("books", "author_id", "id") },
+			{ "user-series", new Relation("series", "?", "id") }
 		};
 
-		private Dictionary<string, Dictionary<string, string>> FieldMappings = new Dictionary<string, Dictionary<string, string>>
+		private static readonly Dictionary<string, Dictionary<string, string>> FieldMappings = new Dictionary<string, Dictionary<string, string>>
 		{
 			{
 				"books",
@@ -154,9 +156,10 @@ namespace PublInquiryServer
 				}
 			}
 		};
+
 		#endregion
 
-		public string GetQuery(InquiryRequest req)
+		public static string GetQuery(InquiryRequest req)
 		{
 			var data = new InquiryData(req.InquiryType);
 
@@ -166,7 +169,7 @@ namespace PublInquiryServer
 			return BuildQuery(data);
 		}
 
-		private void ProcessGroups(IEnumerable<string> groups, InquiryData data, string alias)
+		private static void ProcessGroups(IEnumerable<string> groups, InquiryData data, string alias)
 		{
 			foreach (var group in groups)
 			{
@@ -182,55 +185,81 @@ namespace PublInquiryServer
 			}
 		}
 
-		private void ProcessConditions(IEnumerable<InquiryCondition> conds, InquiryData data, string alias)
+		private static void ProcessConditions(IEnumerable<InquiryCondition> conds, InquiryData data, string alias)
 		{
 			if (conds == null)
 				return;
 
 			foreach (var cond in conds)
+				ProcessCondition(cond, data, alias);
+		}
+
+		private static void ProcessCondition(InquiryCondition cond, InquiryData data, string alias)
+		{
+			if (cond.Kind == "field")
 			{
-				if (cond.Kind == "field")
-				{
-					data.Conditions.Add(ProcessExpression(cond, data.Type, alias));
-				}
-				else
-				{
-					if (IsMultiRelation(cond.Id))
-						throw new NotImplementedException("TODO");
+				data.Conditions.Add(ProcessExpression(cond, data.Type, alias));
+				return;
+			}
 
-					var rel = Lookup(cond.Id, RelationMappings);
-					var newAlias = GetAlias(rel.Table);
-					var condition = string.Format(
-						"{0}.{1} = {2}.{3}",
-						alias,
-						rel.ForeignKey,
-						newAlias,
-						rel.PrimaryKey
-					);
+			var rel = Lookup(cond.Id, RelationMappings);
+			var newAlias = GetAlias(rel.Target);
 
-					data.Joins.Add(new Join(rel.Table, newAlias, condition));
+			if (!IsMultiRelation(cond.Id))
+			{
+				var condition = GetKeyBinding(rel, alias, newAlias);
+				data.Joins.Add(new Join(rel.Target, newAlias, condition));
+				ProcessConditions(cond.Subs, data, newAlias);
+			}
+			else
+			{
+				var subData = new InquiryData(rel.Target);
+				ProcessConditions(cond.Subs, subData, subData.Alias);
+				subData.Conditions.Add(GetKeyBinding(rel, alias, subData.Alias));
+				subData.Columns.Add(new Column(rel.PrimaryKey, subData.Alias));
+				subData.Groups.Add(rel.PrimaryKey);
 
-					ProcessConditions(cond.Subs, data, newAlias);
-				}
+				var expr = BuildQuery(subData);
+				var condition = GetKeyBinding(rel, alias, newAlias);
+				data.Joins.Add(new Join("(" + expr + ")", newAlias, condition));
+
+				data.Conditions.Add(ProcessExpressionBase(cond, "count", newAlias));
 			}
 		}
 
-		private string ProcessExpression(InquiryCondition cond, string type, string alias)
+		private static string ProcessExpression(InquiryCondition cond, string type, string alias)
 		{
 			var name = Lookup(cond.Id, FieldMappings[type]).Replace("%a", alias);
+			return ProcessExpressionBase(cond, name, alias);
+		}
+
+		private static string ProcessExpressionBase(InquiryCondition cond, string field, string alias)
+		{
 			var op = Lookup(cond.Operator, OperatorMappings);
 
-			return op.Replace("%n", name)
+			return op.Replace("%n", field)
 					 .Replace("%v", cond.Value ?? "")
 					 .Replace("%f", cond.From ?? "")
 					 .Replace("%t", cond.To ?? "");
 		}
 
-		private string BuildQuery(InquiryData data)
+		private static string GetKeyBinding(Relation rel, string alias, string newAlias)
+		{
+			return string.Format(
+				"{0}.{1} = {2}.{3}",
+				alias,
+				rel.ForeignKey,
+				newAlias,
+				rel.PrimaryKey
+			);
+		}
+
+		private static string BuildQuery(InquiryData data)
 		{
 			var sb = new StringBuilder();
 			data.Columns.Add(new Column("COUNT(*)", "count"));
 			var columns = from c in data.Columns select string.Format("{0} AS {1}", c.Expression, c.Alias);
+
 			sb.AppendFormat(
 				"SELECT {0} FROM {1} AS {2}",
 				string.Join(", ", columns),
@@ -239,12 +268,14 @@ namespace PublInquiryServer
 			);
 
 			foreach (var curr in data.Joins)
+			{
 				sb.AppendFormat(
 					" JOIN {0} AS {1} ON {2}",
 					curr.Table,
 					curr.Alias,
 					curr.Condition
 				);
+			}
 
 			if (data.Conditions.Count > 0)
 			{
@@ -261,12 +292,12 @@ namespace PublInquiryServer
 			return sb.ToString();
 		}
 
-		private bool IsMultiRelation(string id)
+		private static bool IsMultiRelation(string id)
 		{
-			return new[] { "book-series", "users-books", "users-series", "series-books" }.Contains(id);
+			return new[] { "users-books", "users-series" }.Contains(id);
 		}
 
-		private T Lookup<T>(string key, Dictionary<string, T> lookup)
+		private static T Lookup<T>(string key, IReadOnlyDictionary<string, T> lookup)
 		{
 			T result;
 			if (!lookup.TryGetValue(key, out result))
@@ -275,9 +306,9 @@ namespace PublInquiryServer
 			return result;
 		}
 
-		private void AppendTo(StringBuilder sb, IEnumerable<string> data, string delim)
+		private static void AppendTo(StringBuilder sb, IEnumerable<string> data, string delim)
 		{
-			bool first = true;
+			var first = true;
 			foreach (var curr in data)
 			{
 				if (first)
