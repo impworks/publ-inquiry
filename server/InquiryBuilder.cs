@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace PublInquiryServer
@@ -21,6 +20,27 @@ namespace PublInquiryServer
 				Target = target;
 				PrimaryKey = pk;
 				ForeignKey = fk;
+			}
+		}
+
+		private class OneToManyRelation : Relation
+		{
+			public OneToManyRelation(string target, string pk, string fk) : base(target, pk, fk)
+			{ }
+		}
+
+		private class ManyToManyRelation : Relation
+		{
+			public readonly string Lookup;
+			public readonly string PrimaryKey2;
+			public readonly string ForeignKey2;
+
+			public ManyToManyRelation(string target, string lookup, string pk1, string fk1, string pk2, string fk2)
+				: base(target, pk1, fk1)
+			{
+				Lookup = lookup;
+				PrimaryKey2 = pk2;
+				ForeignKey2 = fk2;
 			}
 		}
 
@@ -78,8 +98,8 @@ namespace PublInquiryServer
 		// {3} = to
 		private static readonly Dictionary<string, string> OperatorMappings = new Dictionary<string, string>
 		{
-			{ "equals", "{0} = {1}" },
-			{ "not-equals", "{0} <> {1}" },
+			{ "equals", "{0} = '{1}'" },
+			{ "not-equals", "{0} <> '{1}'" },
 			{ "null", "{0} IS NULL" },
 			{ "not-null", "{0} IS NOT NULL" },
 			{ "true", "{0} = true" },
@@ -104,8 +124,10 @@ namespace PublInquiryServer
 			{ "book-owner", new Relation("users", "id", "author_id") },
 			{ "book-creator", new Relation("users", "id", "creator_id") },
 			{ "series-owner", new Relation("users", "id", "?") },
-			{ "user-books", new Relation("books", "author_id", "id") },
-			{ "user-series", new Relation("series", "?", "id") }
+			{ "user-books", new OneToManyRelation("book", "author_id", "id") },
+			{ "user-series", new OneToManyRelation("series", "?", "id") },
+			{ "book-series", new ManyToManyRelation("series", "booktoseries", "id", "book_id", "id", "series_id") },
+			{ "series-books", new ManyToManyRelation("book", "booktoseries", "id", "series_id", "id", "book_id") },
 		};
 
 		private static readonly Dictionary<string, Dictionary<string, string>> FieldMappings = new Dictionary<string, Dictionary<string, string>>
@@ -209,13 +231,31 @@ namespace PublInquiryServer
 			var rel = Lookup(cond.Id, RelationMappings);
 			var newAlias = GetAlias(rel.Target);
 
-			if (!IsMultiRelation(cond.Id))
+			if (rel is ManyToManyRelation)
 			{
-				var condition = GetKeyBinding(rel, alias, newAlias);
-				data.Joins.Add(new Join(rel.Target, newAlias, condition));
-				ProcessConditions(cond.Subs, data, newAlias);
+				var mtmr = rel as ManyToManyRelation;
+				var subData = new InquiryData(mtmr.Target);
+				ProcessConditions(cond.Subs, subData, subData.Alias);
+
+				var listCond = string.Format(
+					"{0}.{1} IN (SELECT {2} FROM {3} AS {4} WHERE {4}.{5} = {6}.{7})",
+					subData.Alias,
+					mtmr.PrimaryKey2,
+					mtmr.ForeignKey2,
+					mtmr.Lookup,
+					GetAlias(mtmr.Lookup),
+					mtmr.ForeignKey,
+					alias,
+					mtmr.PrimaryKey
+				);
+				subData.Conditions.Add(listCond);
+
+				var expr = BuildQuery(subData);
+				var col = GetAlias("count");
+				data.Columns.Add(new Column("(" + expr + ")", col));
+				data.Conditions.Add(ProcessExpressionBase(cond, col));
 			}
-			else
+			else if (rel is OneToManyRelation)
 			{
 				var subData = new InquiryData(rel.Target);
 				ProcessConditions(cond.Subs, subData, subData.Alias);
@@ -230,6 +270,12 @@ namespace PublInquiryServer
 				data.Joins.Add(new Join("(" + expr + ")", newAlias, condition));
 
 				data.Conditions.Add(ProcessExpressionBase(cond, newAlias + ".count"));
+			}
+			else
+			{
+				var condition = GetKeyBinding(rel, alias, newAlias);
+				data.Joins.Add(new Join(rel.Target, newAlias, condition));
+				ProcessConditions(cond.Subs, data, newAlias);
 			}
 		}
 
@@ -262,8 +308,9 @@ namespace PublInquiryServer
 
 		private static string BuildQuery(InquiryData data)
 		{
-			var sb = new StringBuilder();
 			data.Columns.Add(new Column("COUNT(*)", "count"));
+
+			var sb = new StringBuilder();
 			var columns = from c in data.Columns select string.Format("{0} AS {1}", c.Expression, c.Alias);
 
 			sb.AppendFormat(
@@ -299,11 +346,6 @@ namespace PublInquiryServer
 			return sb.ToString();
 		}
 
-		private static bool IsMultiRelation(string id)
-		{
-			return new[] { "user-books", "user-series" }.Contains(id);
-		}
-
 		private static T Lookup<T>(string key, IReadOnlyDictionary<string, T> lookup)
 		{
 			T result;
@@ -327,9 +369,9 @@ namespace PublInquiryServer
 		}
 
 		private static int AliasId;
-		public static string GetAlias(string table)
+		public static string GetAlias(string id)
 		{
-			var alias = table[0] + AliasId.ToString();
+			var alias = id[0] + AliasId.ToString();
 			AliasId++;
 			return alias;
 		}

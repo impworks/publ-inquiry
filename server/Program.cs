@@ -4,8 +4,7 @@
 	{
 		static void Main()
 		{
-			var ib = new InquiryBuilder();
-			ib.GetQuery(Tests.BooksGroup).Dump();
+			InquiryBuilder.GetQuery(Tests.BookSeries2).Dump();
 		}
 	}
 }
