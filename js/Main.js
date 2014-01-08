@@ -101,10 +101,10 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, glo
         globals.inquiryToLoad = false;
     };
 
-    var saveInquiry = function() {
+    var saveInquiry = function(caption) {
         withHibernated(function() {
             globals.saveInquiry({
-                caption: $scope.saveInfo.name,
+                caption: caption,
                 date: new Date(),
                 value: {
                     conditions: $scope.conditions,
@@ -187,7 +187,7 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, glo
         if(!$scope.canSave())
             return;
 
-        saveInquiry();
+        saveInquiry($scope.saveInfo.name);
 
         $('.popover.in').popover('hide');
         $rootScope.$broadcast('saved-increment');
@@ -239,15 +239,18 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, glo
     };
 
     $scope.inquire = function () {
+        $scope.isSending = true;
         withHibernated(function() {
-            $http.post(endpoint.publ + '/GetInquiryResult', getRequest())
+            $http.post(endpoints.publ + '/GetInquiryResult', getRequest())
                 .success(function(v) {
                     // todo
                     alert('cool');
+                    $scope.isSending = false;
                 })
                 .error(function() {
                     // todo
-                    alert('wtf!');
+                    $scope.isSending = false;
+                    saveInquiry('error @ ' + new Date().format('yyyy/MM/dd'));
                 });
         });
     };

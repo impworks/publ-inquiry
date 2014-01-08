@@ -20,7 +20,7 @@
                         </label>
                     </div>
                 </div>
-                <a href="" ng-click="find()" class="btn btn-primary btn-lg btn-block">Show me!</a>
+                <a href="" ng-click="find()" ng-disabled="isSending" class="btn btn-primary btn-lg btn-block">Show me!</a>
             </div>
         </div>
     </div>
@@ -44,6 +44,26 @@
     <div style="margin-top: 24px">
         <div ng-repeat="cond in conditions" class="condition condition-{{cond.kind}}" ng-include="'condition-tree-branch'"
              ng-mouseenter="cond.isHovered=true" ng-mouseleave="cond.isHovered=false"></div>
+    </div>
+</div>
+<div class="result-container" ng-show="hasResult && !isSending">
+    <div class="well">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th ng-repeat="col in result.headers">
+                        {{col}}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="row in result.rows">
+                    <td ng-repeat="col in row">
+                        {{col}}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 <script type="text/ng-template" id="condition-tree-branch">
