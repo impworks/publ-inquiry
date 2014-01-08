@@ -136,19 +136,19 @@ namespace PublInquiryServer
 				"books",
 				new Dictionary<string, string>
 				{
-					{ "name", "%a.name" },
-					{ "descr", "%a.?" },
-					{ "access-type", "%a.accesstype" },
-					{ "state", "%a.state" },
-					{ "size", "%a.size" },
-					{ "pages", "%a.pagescount" },
-					{ "views", "%a.viewscount" },
-					{ "bandwidth", "%a.?" },
-					{ "creation-year", "EXTRACT(YEAR FROM %a.creationdate)" },
-					{ "creation-date", "%a.creationdate" },
-					{ "edit-year", "EXTRACT(YEAR FROM %a.modificationdate)" },
-					{ "edit-date", "%a.modificationdate" },
-					{ "update-count", "%a.dataversion" },
+					{ "name", "{0}.name" },
+					{ "descr", "{0}.?" },
+					{ "access-type", "{0}.accesstype" },
+					{ "state", "{0}.state" },
+					{ "size", "{0}.size" },
+					{ "pages", "{0}.pagescount" },
+					{ "views", "{0}.viewscount" },
+					{ "bandwidth", "{0}.?" },
+					{ "creation-year", "EXTRACT(YEAR FROM {0}.creationdate)" },
+					{ "creation-date", "{0}.creationdate" },
+					{ "edit-year", "EXTRACT(YEAR FROM {0}.modificationdate)" },
+					{ "edit-date", "{0}.modificationdate" },
+					{ "update-count", "{0}.dataversion" },
 				}
 			},
 		
@@ -156,12 +156,12 @@ namespace PublInquiryServer
 				"series",
 				new Dictionary<string, string>
 				{
-					{ "name", "%a.name" },
-					{ "creation-year", "EXTRACT(YEAR FROM %a.creationdate)" },
-					{ "creation-date", "%a.creationdate" },
-					{ "edit-year", "EXTRACT(YEAR FROM %a.modificationdate)" },
-					{ "edit-date", "%a.modificationdate" },
-					{ "sharing", "%a.sharing" }
+					{ "name", "{0}.name" },
+					{ "creation-year", "EXTRACT(YEAR FROM {0}.creationdate)" },
+					{ "creation-date", "{0}.creationdate" },
+					{ "edit-year", "EXTRACT(YEAR FROM {0}.modificationdate)" },
+					{ "edit-date", "{0}.modificationdate" },
+					{ "sharing", "{0}.sharing" }
 				}
 			},
 		
@@ -169,13 +169,13 @@ namespace PublInquiryServer
 				"users",
 				new Dictionary<string, string>
 				{
-					{ "name", "%a.displayname" },
-					{ "url-name", "%a.urlname" },
-					{ "reg-year", "EXTRACT(YEAR FROM %a.?)" },
-					{ "reg-date", "%a.?" },
-					{ "last-act", "%a.?" },
-					{ "pay-exp", "%a.?" },
-					{ "traffic", "%a.?" },
+					{ "name", "{0}.displayname" },
+					{ "url-name", "{0}.urlname" },
+					{ "reg-year", "EXTRACT(YEAR FROM {0}.?)" },
+					{ "reg-date", "{0}.?" },
+					{ "last-act", "{0}.?" },
+					{ "pay-exp", "{0}.?" },
+					{ "traffic", "{0}.?" },
 				}
 			}
 		};
@@ -204,7 +204,7 @@ namespace PublInquiryServer
 
 				data.Columns.Add(
 					new Column(
-						Lookup(group, FieldMappings[data.Type]).Replace("%a", alias),
+						string.Format(Lookup(group, FieldMappings[data.Type]), alias),
 						group
 					)
 				);
@@ -281,7 +281,7 @@ namespace PublInquiryServer
 
 		private static string ProcessExpression(InquiryCondition cond, string type, string alias)
 		{
-			var name = Lookup(cond.Id, FieldMappings[type]).Replace("%a", alias);
+			var name = string.Format(Lookup(cond.Id, FieldMappings[type]), alias);
 			return ProcessExpressionBase(cond, name);
 		}
 
