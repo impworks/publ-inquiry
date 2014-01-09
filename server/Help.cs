@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace PublInquiryServer
 {
@@ -6,13 +7,16 @@ namespace PublInquiryServer
 	{
 		public static void Dump(this object obj)
 		{
-			Console.WriteLine(
-				obj == null
-					? "(null)"
-					: obj.ToString()
-			);
+			var data = obj == null
+				? "(null)"
+				: obj.ToString();
 
-			Console.ReadKey(true);
+			using(var fs = new FileStream("log.sql", FileMode.Append, FileAccess.Write))
+			using(var sr = new StreamWriter(fs))
+				sr.WriteLine(data);
+
+			Console.WriteLine(data);
+			Console.ReadKey(false);
 		}
 	}
 }
