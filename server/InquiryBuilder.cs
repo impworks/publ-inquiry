@@ -180,7 +180,31 @@ namespace PublInquiryServer
 			}
 		};
 
+		private static Dictionary<string, string> HeaderMapping = new Dictionary<string, string>
+		{
+			{ "access-type", "Access Type" },
+			{ "state", "State" },
+			{ "creation-year", "Creation Year" },
+			{ "quota", "Publ Quota" },
+			{ "reg-year", "Registration Year" },
+			{ "exp-year", "Expiration Year" },
+		};
+
 		#endregion
+
+		public static InquiryResponse GetReponse(InquiryRequest req)
+		{
+			return new InquiryResponse
+			{
+				Query = GetQuery(req),
+				Headers = GetHeaders(req)
+			};
+		}
+
+		private static string[] GetHeaders(InquiryRequest req)
+		{
+			return req.Groups.Select(x => Lookup(x, HeaderMapping)).ToArray();
+		}
 
 		public static string GetQuery(InquiryRequest req)
 		{

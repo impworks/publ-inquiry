@@ -7,6 +7,13 @@
 		public InquiryCondition[] Conditions;
 	}
 
+	public class InquiryResponse
+	{
+		public string[] Headers;
+		public string[][] Rows;
+		public string Query;
+	}
+
 	public class InquiryCondition
 	{
 		public string Id;
