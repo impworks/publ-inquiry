@@ -123,11 +123,11 @@ namespace PublInquiryServer
 		{
 			{ "book-owner", new Relation("users", "id", "author_id") },
 			{ "book-creator", new Relation("users", "id", "creator_id") },
-			{ "series-owner", new Relation("users", "id", "?") },
+			{ "series-owner", new Relation("users", "id", "owner_id") },
 			{ "user-books", new OneToManyRelation("book", "author_id", "id") },
-			{ "user-series", new OneToManyRelation("series", "?", "id") },
-			{ "book-series", new ManyToManyRelation("series", "booktoseries", "id", "book_id", "id", "series_id") },
-			{ "series-books", new ManyToManyRelation("book", "booktoseries", "id", "series_id", "id", "book_id") },
+			{ "user-series", new OneToManyRelation("series", "owner_id", "id") },
+			{ "book-series", new ManyToManyRelation("series", "bookstoseries", "id", "book_id", "id", "series_id") },
+			{ "series-books", new ManyToManyRelation("book", "bookstoseries", "id", "series_id", "id", "book_id") },
 		};
 
 		private static readonly Dictionary<string, Dictionary<string, string>> FieldMappings = new Dictionary<string, Dictionary<string, string>>
@@ -137,13 +137,13 @@ namespace PublInquiryServer
 				new Dictionary<string, string>
 				{
 					{ "name", "{0}.name" },
-					{ "descr", "{0}.?" },
+					{ "descr", "{0}.description" },
 					{ "access-type", "{0}.accesstype" },
-					{ "state", "{0}.state" },
+					{ "state", "{0}.status" },
 					{ "size", "{0}.size" },
 					{ "pages", "{0}.pagescount" },
 					{ "views", "{0}.viewscount" },
-					{ "bandwidth", "{0}.?" },
+					{ "bandwidth", "{0}.bandwidthused" },
 					{ "creation-year", "EXTRACT(YEAR FROM {0}.creationdate)" },
 					{ "creation-date", "{0}.creationdate" },
 					{ "edit-year", "EXTRACT(YEAR FROM {0}.modificationdate)" },
@@ -171,11 +171,11 @@ namespace PublInquiryServer
 				{
 					{ "name", "{0}.displayname" },
 					{ "url-name", "{0}.urlname" },
-					{ "reg-year", "EXTRACT(YEAR FROM {0}.?)" },
-					{ "reg-date", "{0}.?" },
-					{ "last-act", "{0}.?" },
-					{ "pay-exp", "{0}.?" },
-					{ "traffic", "{0}.?" },
+					{ "reg-year", "EXTRACT(YEAR FROM {0}.registrationdate)" },
+					{ "reg-date", "{0}.registrationdate" },
+					{ "last-act", "{0}.lastlogon" },
+					{ "pay-exp", "{0}.paymentexpiration" },
+					{ "traffic", "{0}.trafficleft" },
 				}
 			}
 		};
