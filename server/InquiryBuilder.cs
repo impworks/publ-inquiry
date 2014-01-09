@@ -124,10 +124,10 @@ namespace PublInquiryServer
 			{ "book-owner", new Relation("users", "id", "author_id") },
 			{ "book-creator", new Relation("users", "id", "creator_id") },
 			{ "series-owner", new Relation("users", "id", "owner_id") },
-			{ "user-books", new OneToManyRelation("book", "author_id", "id") },
+			{ "user-books", new OneToManyRelation("books", "author_id", "id") },
 			{ "user-series", new OneToManyRelation("series", "owner_id", "id") },
 			{ "book-series", new ManyToManyRelation("series", "bookstoseries", "id", "book_id", "id", "series_id") },
-			{ "series-books", new ManyToManyRelation("book", "bookstoseries", "id", "series_id", "id", "book_id") },
+			{ "series-books", new ManyToManyRelation("books", "bookstoseries", "id", "series_id", "id", "book_id") },
 		};
 
 		private static readonly Dictionary<string, Dictionary<string, string>> FieldMappings = new Dictionary<string, Dictionary<string, string>>
@@ -187,7 +187,7 @@ namespace PublInquiryServer
 			var data = new InquiryData(req.InquiryType);
 
 			ProcessGroups(req.Groups, data, data.Alias);
-			ProcessConditions(req.Conditions, data, data.Alias);
+			ProcessConditions(req.Conditions, data, data.Type, data.Alias);
 
 			return BuildQuery(data);
 		}
@@ -205,26 +205,26 @@ namespace PublInquiryServer
 				data.Columns.Add(
 					new Column(
 						string.Format(Lookup(group, FieldMappings[data.Type]), alias),
-						group
+						col
 					)
 				);
 			}
 		}
 
-		private static void ProcessConditions(IEnumerable<InquiryCondition> conds, InquiryData data, string alias)
+		private static void ProcessConditions(IEnumerable<InquiryCondition> conds, InquiryData data, string type, string alias)
 		{
 			if (conds == null)
 				return;
 
 			foreach (var cond in conds)
-				ProcessCondition(cond, data, alias);
+				ProcessCondition(cond, data, type, alias);
 		}
 
-		private static void ProcessCondition(InquiryCondition cond, InquiryData data, string alias)
+		private static void ProcessCondition(InquiryCondition cond, InquiryData data, string type, string alias)
 		{
 			if (cond.Kind == "field")
 			{
-				data.Conditions.Add(ProcessExpression(cond, data.Type, alias));
+				data.Conditions.Add(ProcessExpression(cond, type, alias));
 				return;
 			}
 
@@ -235,7 +235,7 @@ namespace PublInquiryServer
 			{
 				var mtmr = rel as ManyToManyRelation;
 				var subData = new InquiryData(mtmr.Target);
-				ProcessConditions(cond.Subs, subData, subData.Alias);
+				ProcessConditions(cond.Subs, subData, mtmr.Target, subData.Alias);
 
 				var listCond = string.Format(
 					"{0}.{1} IN (SELECT {2} FROM {3} AS {4} WHERE {4}.{5} = {6}.{7})",
@@ -251,15 +251,12 @@ namespace PublInquiryServer
 				subData.Conditions.Add(listCond);
 
 				var expr = BuildQuery(subData);
-				var col = GetAlias("count");
-				data.Columns.Add(new Column("(" + expr + ")", col));
-				data.Conditions.Add(ProcessExpressionBase(cond, col));
+				data.Conditions.Add(ProcessExpressionBase(cond, "(" + expr + ")"));
 			}
 			else if (rel is OneToManyRelation)
 			{
 				var subData = new InquiryData(rel.Target);
-				ProcessConditions(cond.Subs, subData, subData.Alias);
-				subData.Conditions.Add(GetKeyBinding(rel, alias, subData.Alias));
+				ProcessConditions(cond.Subs, subData, rel.Target, subData.Alias);
 
 				var col = rel.PrimaryKey.Replace("-", "_");
 				subData.Columns.Add(new Column(rel.PrimaryKey, col));
@@ -275,7 +272,7 @@ namespace PublInquiryServer
 			{
 				var condition = GetKeyBinding(rel, alias, newAlias);
 				data.Joins.Add(new Join(rel.Target, newAlias, condition));
-				ProcessConditions(cond.Subs, data, newAlias);
+				ProcessConditions(cond.Subs, data, rel.Target, newAlias);
 			}
 		}
 
@@ -339,14 +336,13 @@ namespace PublInquiryServer
 			if (data.Groups.Count > 0)
 			{
 				sb.Append(" GROUP BY ");
-				var groups = from g in data.Groups select string.Format("{0}.{1}", data.Alias, g);
-				AppendTo(sb, groups, ", ");
+				AppendTo(sb, data.Groups, ", ");
 			}
 
 			return sb.ToString();
 		}
 
-		private static T Lookup<T>(string key, IReadOnlyDictionary<string, T> lookup)
+		private static T Lookup<T>(string key, IDictionary<string, T> lookup)
 		{
 			T result;
 			if (!lookup.TryGetValue(key, out result))
