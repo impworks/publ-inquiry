@@ -18,9 +18,9 @@ angular.module('inquiry', [ 'ngRoute', 'ui.bootstrap', '$strap.directives' ])
                 ls.savedInquiries = JSON.stringify(inq);
             },
 
-            removeInquiry: function(v) {
+            removeInquiry: function(id) {
                 var inq = self.savedInquiries;
-                tools.Remove(inq, v);
+                inq.splice(id, 1);
                 ls.savedInquiries = JSON.stringify(inq);
             },
 

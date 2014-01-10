@@ -14,8 +14,8 @@ var SavedCtrl = function ($scope, $location, $rootScope, globals, model, tools) 
     };
 
     $scope.remove = function(inq) {
-        globals.removeInquiry(inq);
         var id = $scope.list.indexOf(inq);
+        globals.removeInquiry(id);
         if(id !== -1) $scope.list.splice(id, 1);
     };
 
