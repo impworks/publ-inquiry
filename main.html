@@ -20,7 +20,7 @@
                         </label>
                     </div>
                 </div>
-                <a href="" ng-click="inquire()" ng-disabled="isSending" class="btn btn-primary btn-lg btn-block">Show me!</a>
+                <a href="" ng-click="inquire()" ng-disabled="isSending" class="btn btn-primary btn-lg btn-block">{{inquireCaption()}}</a>
             </div>
         </div>
     </div>
@@ -60,7 +60,7 @@
                 </code>
             </div>
         </div>
-        <div class="panel panel-info" ng-show="inquiryResult.Success">
+        <div class="panel panel-default" ng-show="inquiryResult.Success">
             <div class="panel-heading">Result</div>
             <div class="panel-body" ng-hide="inquiryResult.IsGrouped">
                 There are <b>{{inquiryResult.Count}}</b> matching {{inquiryType.name}} on Publ.com!

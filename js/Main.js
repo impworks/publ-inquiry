@@ -205,11 +205,14 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, glo
                 var cond = {
                     kind: curr.kind,
                     id: curr.id,
-                    operator: curr.operator,
-                    value: curr.value.value,
-                    from: curr.value.from,
-                    to: curr.value.to
+                    operator: curr.operator
                 };
+
+                if(!!curr.value) {
+                    cond.value = curr.value.value;
+                    cond.from = curr.value.from;
+                    cond.to = curr.value.to;
+                }
 
                 if(curr.kind == 'relation' && curr.subs && curr.subs.length) {
                     cond.subs = [];
@@ -237,6 +240,10 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, glo
             Groups: groups,
             Conditions: getConditionsForRequest()
         };
+    };
+
+    $scope.inquireCaption = function () {
+        return $scope.isSending ? 'Working...' : 'Show me!';
     };
 
     $scope.inquire = function () {
