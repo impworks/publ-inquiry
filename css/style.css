@@ -144,9 +144,13 @@ ul.navbar-nav li
     background-color: #faf8f0;
 }
 
-.condition-container
+.main-container
 {
     width: 650px;
+}
+
+.condition-container
+{
     margin: 30px 0 10px 0;
 }
 

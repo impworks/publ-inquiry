@@ -9,18 +9,18 @@ angular.module('inquiry').factory('model',
 
             groupFields: {
                 books: [
-                    { type: 'access-type', name: 'Access type' },
-                    { type: 'state', name: 'State' },
-                    { type: 'creation-year', name: 'Year' }
+                    { id: 'access-type', name: 'Access type' },
+                    { id: 'state', name: 'State' },
+                    { id: 'creation-year', name: 'Year' }
                 ],
                 users: [
-                    { type: 'state', name: 'State' },
-                    { type: 'quota', name: 'Publ.com Quota' },
-                    { type: 'reg-year', name: 'Registration year' },
-                    { type: 'exp-year', name: 'Expiration year' }
+                    { id: 'state', name: 'State' },
+                    { id: 'quota', name: 'Publ.com Quota' },
+                    { id: 'reg-year', name: 'Registration year' },
+                    { id: 'exp-year', name: 'Expiration year' }
                 ],
                 series: [
-                    { type: 'creation-year', name: 'Year' }
+                    { id: 'creation-year', name: 'Year' }
                 ]
             },
 

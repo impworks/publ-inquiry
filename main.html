@@ -20,50 +20,67 @@
                         </label>
                     </div>
                 </div>
-                <a href="" ng-click="find()" ng-disabled="isSending" class="btn btn-primary btn-lg btn-block">Show me!</a>
+                <a href="" ng-click="inquire()" ng-disabled="isSending" class="btn btn-primary btn-lg btn-block">Show me!</a>
             </div>
         </div>
     </div>
 </div>
-<h2>
-    How many
-    <div class="dropdown inline">
-        <a data-toggle="dropdown" href="" class="dropdown-toggle inner-link">{{inquiryType.name}}</a>
-        <ul class="dropdown-menu" role="menu">
-            <li ng-repeat="inq in inquiryTypes">
-                <a href="" ng-click="setInquiryType(inq)">{{inq.name}}</a>
-            </li>
-        </ul>
+<div class="main-container">
+    <h2>
+        How many
+        <div class="dropdown inline">
+            <a data-toggle="dropdown" href="" class="dropdown-toggle inner-link">{{inquiryType.name}}</a>
+            <ul class="dropdown-menu" role="menu">
+                <li ng-repeat="inq in inquiryTypes">
+                    <a href="" ng-click="setInquiryType(inq)">{{inq.name}}</a>
+                </li>
+            </ul>
+        </div>
+        are there on Publ.com?
+    </h2>
+    <div class="condition-container">
+        <a href="" ng-click="pickCondition()" class="btn btn-default btn-lg" title="Add condition">
+            <span class="glyphicon glyphicon-search"></span> Where...
+        </a>
+        <div style="margin-top: 24px">
+            <div ng-repeat="cond in conditions" class="condition condition-{{cond.kind}}" ng-include="'condition-tree-branch'"
+                 ng-mouseenter="cond.isHovered=true" ng-mouseleave="cond.isHovered=false"></div>
+        </div>
     </div>
-    are there on Publ.com?
-</h2>
-<div class="condition-container">
-    <a href="" ng-click="pickCondition()" class="btn btn-default btn-lg" title="Add condition">
-        <span class="glyphicon glyphicon-search"></span> Where...
-    </a>
-    <div style="margin-top: 24px">
-        <div ng-repeat="cond in conditions" class="condition condition-{{cond.kind}}" ng-include="'condition-tree-branch'"
-             ng-mouseenter="cond.isHovered=true" ng-mouseleave="cond.isHovered=false"></div>
-    </div>
-</div>
-<div class="result-container" ng-show="hasResult && !isSending">
-    <div class="well">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th ng-repeat="col in result.headers">
-                        {{col}}
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="row in result.rows">
-                    <td ng-repeat="col in row">
-                        {{col}}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="result-container" ng-show="!!inquiryResult && !isSending">
+        <div class="panel panel-danger" ng-hide="inquiryResult.Success">
+            <div class="panel-heading">
+                Whoops!
+            </div>
+            <div class="panel-body">
+                There has been an error processing your inquiry! We apologize for inconvenience!
+                <code>
+                    {{inquiryResult.Query}}
+                </code>
+            </div>
+        </div>
+        <div class="panel panel-info">
+            <div class="panel-heading">Result</div>
+            <table class="table" ng-show="inquiryResult.Success">
+                <thead>
+                    <tr>
+                        <th width="20%">
+                            Count
+                        </th>
+                        <th ng-repeat="col in inquiryResult.Headers">
+                            {{col}}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="row in inquiryResult.Rows">
+                        <td ng-repeat="col in row">
+                            {{col}}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 <script type="text/ng-template" id="condition-tree-branch">

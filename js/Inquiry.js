@@ -1,6 +1,6 @@
 angular.module('inquiry', [ 'ngRoute', 'ui.bootstrap', '$strap.directives' ])
     .constant('endpoints', {
-        publ: 'http://publ.com/Services/Admin.asmx',
+        publ: 'http://sso-publ.local/Services/Admin.asmx',
         sso : 'https://logon.flippingbook.com/SSOThinClient.asmx'
     })
     .factory('globals', function(tools) {

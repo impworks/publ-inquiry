@@ -225,13 +225,13 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, glo
     };
 
     var getRequest = function () {
-        var groups = tools.Where(
-            $scope.groupFields,
-            function (x) { return !!x.selected; }
+        var groups = tools.Select(
+            $scope.groupFields.filter( function (x) { return !!x.selected; }),
+            function (x) { return x.id }
         );
 
         return {
-            Token: globals.token,
+            Token: { Value: globals.token.Value },
             InquiryType: $scope.inquiryType.type,
             Groups: groups,
             Conditions: getConditionsForRequest()
@@ -240,17 +240,19 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, glo
 
     $scope.inquire = function () {
         $scope.isSending = true;
+        $scope.inquiryResult = false;
         withHibernated(function() {
-            $http.post(endpoints.publ + '/GetInquiryResult', getRequest())
+            var req = { request: getRequest() };
+            var req2 = { request: { Test: 'hello' } };
+            $http.post(endpoints.publ + '/GetInquiryResult', req)
                 .success(function(v) {
-                    // todo
-                    alert('cool');
+                    $scope.inquiryResult = v.d;
                     $scope.isSending = false;
                 })
                 .error(function() {
-                    // todo
-                    $scope.isSending = false;
+                    $scope.inquiryResult = { Success: false, ErrorMessage: 'Network error!' };
                     saveInquiry('error @ ' + new Date().format('yyyy/MM/dd'));
+                    $scope.isSending = false;
                 });
         });
     };
