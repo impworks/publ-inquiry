@@ -130,6 +130,7 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, glo
     };
 
     $scope.clear = function () {
+        $scope.inquiryResult = false;
         $scope.conditions = [];
         $scope.inquiryType = model.inquiryTypes[0];
         $scope.groupFields = angular.copy(model.groupFields[$scope.inquiryType.type]);
@@ -215,7 +216,7 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, glo
                     process(curr.subs, cond.subs);
                 }
 
-                target.push(curr);
+                target.push(cond);
             }
         };
 
@@ -241,19 +242,17 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, glo
     $scope.inquire = function () {
         $scope.isSending = true;
         $scope.inquiryResult = false;
-        withHibernated(function() {
-            var req = { request: getRequest() };
-            var req2 = { request: { Test: 'hello' } };
-            $http.post(endpoints.publ + '/GetInquiryResult', req)
-                .success(function(v) {
-                    $scope.inquiryResult = v.d;
-                    $scope.isSending = false;
-                })
-                .error(function() {
-                    $scope.inquiryResult = { Success: false, ErrorMessage: 'Network error!' };
-                    saveInquiry('error @ ' + new Date().format('yyyy/MM/dd'));
-                    $scope.isSending = false;
-                });
-        });
+
+        var req = { request: getRequest() };
+        $http.post(endpoints.publ + '/GetInquiryResult', req)
+            .success(function(v) {
+                $scope.inquiryResult = v.d;
+                $scope.isSending = false;
+            })
+            .error(function() {
+                $scope.inquiryResult = { Success: false, ErrorMessage: 'Network error!' };
+                saveInquiry('error @ ' + new Date().format('yyyy/MM/dd'));
+                $scope.isSending = false;
+            });
     };
 };
