@@ -112,6 +112,8 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, glo
                     group: $scope.groupFields
                 }
             });
+
+            $rootScope.$broadcast('saved-increment');
         });
     };
 
@@ -191,7 +193,6 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, glo
         saveInquiry($scope.saveInfo.name);
 
         $('.popover.in').popover('hide');
-        $rootScope.$broadcast('saved-increment');
     };
 
     /**

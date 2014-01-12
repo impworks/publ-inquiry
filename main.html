@@ -62,11 +62,12 @@
         </div>
         <div class="panel panel-default" ng-show="inquiryResult.Success">
             <div class="panel-heading">Result</div>
-            <div class="panel-body" ng-hide="inquiryResult.IsGrouped">
-                There are <b>{{inquiryResult.Count}}</b> matching {{inquiryType.name}} on Publ.com!
-            </div>
-            <table class="table" ng-show="inquiryResult.IsGrouped">
-                <thead>
+            <div class="panel-body">
+                <p>
+                    There are <b>{{inquiryResult.Count}}</b> matching {{inquiryType.name}} on Publ.com!
+                </p>
+                <table class="table table-bordered table-nonfluid" ng-show="inquiryResult.IsGrouped">
+                    <thead>
                     <tr>
                         <th width="20%">
                             Count
@@ -75,15 +76,16 @@
                             {{col}}
                         </th>
                     </tr>
-                </thead>
-                <tbody>
+                    </thead>
+                    <tbody>
                     <tr ng-repeat="row in inquiryResult.Rows">
                         <td ng-repeat="col in row">
                             {{col}}
                         </td>
                     </tr>
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
