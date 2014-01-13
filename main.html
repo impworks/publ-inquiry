@@ -48,19 +48,17 @@
         </div>
     </div>
     <div class="condition-container" ng-show="!!inquiryResult && !isSending">
-        <div class="panel panel-danger" ng-hide="inquiryResult.Success">
+        <div class="panel panel-danger panel-result" ng-hide="inquiryResult.Success">
             <div class="panel-heading">
                 Whoops!
             </div>
             <div class="panel-body">
-                There has been an error processing your inquiry! We apologize for inconvenience!
-                <br />
-                <code>
-                    {{inquiryResult.Query}}
-                </code>
+                <span>
+                    There has been an error processing your inquiry! We apologize for inconvenience!
+                </span>
             </div>
         </div>
-        <div class="panel panel-default" ng-show="inquiryResult.Success">
+        <div class="panel panel-default panel-result" ng-show="inquiryResult.Success">
             <div class="panel-heading">Result</div>
             <div class="panel-body">
                 <p>

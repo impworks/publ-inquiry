@@ -9,15 +9,18 @@ angular.module('inquiry').factory('model',
 
             groupFields: {
                 books: [
-                    { id: 'access-type', name: 'Access type' },
+                    { id: 'access-type', name: 'Access Type' },
                     { id: 'state', name: 'State' },
                     { id: 'creation-year', name: 'Year' }
                 ],
                 users: [
                     { id: 'state', name: 'State' },
-                    { id: 'quota', name: 'Publ.com Quota' },
-                    { id: 'reg-year', name: 'Registration year' },
-                    { id: 'exp-year', name: 'Expiration year' }
+                    { id: 'type', name: 'Account Type' },
+                    { id: 'source', name: 'Account Source' },
+                    { id: 'plan', name: 'Publ.com Plan' },
+                    { id: 'reg-year', name: 'Registration Year' },
+                    { id: 'exp-year', name: 'Expiration Year' },
+                    { id: 'upl-year', name: 'First Upload Year' }
                 ],
                 series: [
                     { id: 'creation-year', name: 'Year' }
@@ -71,7 +74,9 @@ angular.module('inquiry').factory('model',
                     { id: 'reg-date', type: 'date', caption: 'Registration date' },
                     { id: 'last-act', type: 'date', caption: 'Last activity' },
                     { id: 'pay-exp', type: 'date', caption: 'Payment expiration' },
-                    { id: 'traffic', type: 'size', caption: 'Traffic left' }
+                    { id: 'traffic', type: 'size', caption: 'Traffic left' },
+                    { id: 'upl-date', type: 'date', caption: 'First upload date' },
+                    { id: 'upl-year', type: 'enum', enum: 'year', caption: 'First upload year' }
                 ]
             },
 

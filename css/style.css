@@ -103,6 +103,13 @@ ul.navbar-nav li
 .table-nonfluid
 {
     width: auto;
+    margin-bottom: 0;
+}
+
+.panel-result
+{
+    position: absolute;
+    width: 650px;
 }
 
 /* Dialog fixes */

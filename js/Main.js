@@ -142,6 +142,7 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, glo
         $scope.inquiryType = v;
         $scope.groupFields = model.groupFields[v.type];
         $scope.clearConditions();
+        $scope.inquiryResult = false;
     };
 
     $scope.pickCondition = function (parent) {
