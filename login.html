@@ -5,9 +5,9 @@
                 <strong>Log in to Publ.com Inquiry</strong>
             </div>
             <div class="panel-body">
-                <div class="alert alert-danger" ng-show="hasError">
+                <div class="alert alert-danger" ng-show="!!error">
                     <button type="button" class="close" aria-hidden="true" ng-click="closeError()">&times;</button>
-                    <strong>Oops!</strong> Looks like your password is incorrect.
+                    <strong>Oops!</strong> {{error}}
                 </div>
                 <div class="form-group">
                     <label class="control-label col-sm-3" for="login">Login</label>

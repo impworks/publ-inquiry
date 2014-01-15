@@ -1,21 +1,24 @@
 var LoginCtrl = function($scope, $http, $location, globals, endpoints) {
 
-    if(globals.token) {
+    if(globals.token && globals.token != 'invalid') {
         $location.path('/main');
         return;
     }
 
     $scope.login = globals.login || 'tester@test.com';
     $scope.pass = '';
-    $scope.hasError = false;
     $scope.working = false;
+    $scope.error = false;
+
+    if(globals.token == 'invalid')
+        $scope.error = 'Your access token has expired. Please relogin!';
 
     $scope.canLogin = function() {
         return !!$scope.login && !!$scope.pass && !$scope.working;
     };
 
     $scope.closeError = function() {
-        $scope.hasError = false;
+        $scope.error = false;
     };
 
     $scope.loginCaption = function() {
@@ -24,6 +27,7 @@ var LoginCtrl = function($scope, $http, $location, globals, endpoints) {
 
     $scope.doLogin = function() {
         $scope.working = true;
+        $scope.error = false;
         globals.login = $scope.login;
         var request = {
             authenticationData: {
@@ -38,12 +42,12 @@ var LoginCtrl = function($scope, $http, $location, globals, endpoints) {
         $http.post(endpoints.sso + '/CombinedAuthenticate', request)
             .success(function(data, status) {
                 $scope.working = false;
-                $scope.hasError = !data.d.Success;
                 if(data.d.Success) {
                     globals.token = data.d.Token;
                     $location.path('/main');
                 } else {
                     $scope.pass = '';
+                    $scope.error = 'Looks like your password is incorrect.';
                 }
             });
     };

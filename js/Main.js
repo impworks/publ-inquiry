@@ -1,7 +1,7 @@
 var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, globals, model, tools, endpoints) {
 
     // check auth
-    if(!globals.token) {
+    if(!globals.token || globals.token == 'invalid') {
         $location.path('/');
         return;
     }
@@ -257,6 +257,15 @@ var MainCtrl = function ($scope, $http, $location, $modal, $sce, $rootScope, glo
             .success(function(v) {
                 $scope.inquiryResult = v.d;
                 $scope.isSending = false;
+
+                if(!v.d.Success) {
+                    var err = v.d.Errors && v.d.Errors.length > 0 ? v.d.Errors[0] : false;
+                    if(err && err.Message == 'InvalidAccessToken') {
+                        // must relogin
+                        globals.token = 'invalid';
+                        $location.path('/');
+                    }
+                }
             })
             .error(function() {
                 $scope.inquiryResult = { Success: false, ErrorMessage: 'Network error!' };
